@@ -1,22 +1,15 @@
 import os,sys,math,operator,codecs,traceback
 from collections import defaultdict
 
-if len(sys.argv)<7:
-	print 'python project_alignment.py [src_mst_file] [dst_mst_file] [align_file] [pmi_file] [output_file_name] [max_number_of_members]'
+if len(sys.argv)<5:
+	print 'python project_alignment.py [src_mst_file] [dst_mst_file] [align_intersection_file] [output_file_name]'
 	sys.exit(0)
-
 
 src_mst_reader=codecs.open(os.path.abspath(sys.argv[1]),'r')
 dst_mst_reader=codecs.open(os.path.abspath(sys.argv[2]),'r')
 align_reader=codecs.open(os.path.abspath(sys.argv[3]),'r')
-pmi_reader=codecs.open(os.path.abspath(sys.argv[4]),'r')
-output_file_name=os.path.abspath(sys.argv[5])
-pmi_threshold=int(sys.argv[6])
+output_file_name=os.path.abspath(sys.argv[4])
 
-
-# initializing the data structs
-pmi_dict=defaultdict(float)
-pmi2_dict=defaultdict(float)
 prob_dict=defaultdict()
 
 src_alignment_dic=defaultdict()
@@ -102,45 +95,10 @@ while line:
 	line=align_reader.readline()
 sys.stdout.write('\n')
 
-# reading pmi and pmi^2
-sys.stdout.write('reading pmis...')
-sys.stdout.flush()
-line=pmi_reader.readline()
-while line:
-	line=line.strip()
-	if line:
-		flds=line.split('\t')
-		pair=flds[0]+'\t'+flds[1]
-		pmi_dict[pair]=float(flds[4])
-		pmi2_dict[pair]=float(flds[5])
-		prob_dict[pair]=flds
-	line=pmi_reader.readline()
-
-sys.stdout.write('\n')
-sys.stdout.write('sorting pmis...')
-sys.stdout.flush()
-sorted_pmis=sorted(pmi_dict.iteritems(), key=operator.itemgetter(1))[0:pmi_threshold]
-sorted_pmi2s=sorted(pmi2_dict.iteritems(), key=operator.itemgetter(1))[0:pmi_threshold]
-
-pmi_list=set()
-pmi2_list=set()
-for p in sorted_pmis:
-	pmi_list.add(p[0])
-for p in sorted_pmi2s:
-	pmi2_list.add(p[0])
-
-
-sys.stdout.write('len of pmi_list: '+str(len(pmi_list))+'\n')
-
 
 # initializing different types of outputs
 src_dst_no_restriction_writer=codecs.open(output_file_name+'.src_dst_no_restriction','w')
 src_dst_pos_restriction_writer=codecs.open(output_file_name+'.src_dst_pos_restriction','w')
-src_dst_pmi_restriction_writer=codecs.open(output_file_name+'.src_dst_pmi_restriction','w')
-src_dst_pmi2_restriction_writer=codecs.open(output_file_name+'.src_dst_pmi2_restriction','w')
-src_dst_pos_pmi_restriction_writer=codecs.open(output_file_name+'.src_dst_pos_pmi_restriction','w')
-src_dst_pos_pmi2_restriction_writer=codecs.open(output_file_name+'.src_dst_pos_pmi2_restriction','w')
-src_dst_pos_pmi_1_2_restriction_writer=codecs.open(output_file_name+'.src_dst_pos_pmi_1_2_restriction','w')
 
 # getting src projections
 sys.stdout.write('getting src projections...')
@@ -163,14 +121,6 @@ for s in src_alignment_dic.keys():
 	pos_restriction_labels=list()
 	pos_restriction_projection=False
 
-	pmi_restriction_heads=list()
-	pmi_restriction_labels=list()
-	pmi_restriction_projection=False
-
-	pmi2_restriction_heads=list()
-	pmi2_restriction_labels=list()
-	pmi2_restriction_projection=False
-
 	exception=False
 
 	for mod in range(0,len(dst_tree[0])):
@@ -179,10 +129,6 @@ for s in src_alignment_dic.keys():
 		no_restriction_confidence.append(1.0)
 		pos_restriction_heads.append('-1')
 		pos_restriction_labels.append("_")
-		pmi_restriction_heads.append('-1')
-		pmi_restriction_labels.append("_")
-		pmi2_restriction_heads.append('-1')
-		pmi2_restriction_labels.append("_")
 
 	for mod in range(0,len(src_tree[0])):
 		src_head=src_tree[3][mod]
@@ -199,14 +145,8 @@ for s in src_alignment_dic.keys():
 
 		if alignment.has_key(src_mod) and alignment.has_key(src_head):
 			dst_head=alignment[src_head]
-			dst_mod=alignment[src_mod]
+			dst_mod=alignment[src_mod]	
 			
-			
-			#print src_tree[1]
-			#print ' '.join(dst_tree[0])
-			#print len(dst_tree[1]),src_head,src_mod,dst_head,dst_mod
-			#print alignment
-			#print s
 			try:
 				# no restriction
 				no_restriction_labels[dst_mod-1]=src_label
@@ -220,35 +160,17 @@ for s in src_alignment_dic.keys():
 					dst_head_word=dst_tree[0][dst_head-1]
 				mod_pair=src_word+'\t'+dst_mod_word
 				head_pair=src_head_word+'\t'+dst_head_word
-				confidence=math.exp(pmi2_dict[mod_pair]+pmi2_dict[head_pair])
 				no_restriction_heads[dst_mod-1]=str(dst_head)#+':'+str(confidence)
-
-
-
-
 
 				# pos restriction
 				if src_pos==dst_mod_pos and src_head_pos==dst_head_pos:
 					pos_restriction_heads[dst_mod-1]=str(dst_head)
 					pos_restriction_labels[dst_mod-1]=src_label
 					pos_restriction_projection=True
-
-
-					# pmi restriction
-					if head_pair in pmi_list and mod_pair in pmi_list:
-						pmi_restriction_heads[dst_mod-1]=str(dst_head)
-						pmi_restriction_labels[dst_mod-1]=src_label
-						pmi_restriction_projection=True					
-
-					if head_pair in pmi2_list and mod_pair in pmi2_list:
-						pmi2_restriction_heads[dst_mod-1]=str(dst_head)
-						pmi2_restriction_labels[dst_mod-1]=src_label
-						pmi2_restriction_projection=True		
-
 			except:
 				print src_tree[1]
 				print ' '.join(dst_tree[0])
-				print len(dst_tree[1]),src_head,src_mod,dst_head,dst_mod
+				print len(dst_tree[0]),len(dst_tree[1]),len(dst_tree[3]),src_head,src_mod,dst_head,dst_mod
 				print alignment
 				print s
 				exception=True
@@ -256,48 +178,31 @@ for s in src_alignment_dic.keys():
 				#sys.exit(0)
 
 	# no restriction output
-	if no_restriction_projection and not exception:
+	if not exception:
 		src_dst_no_restriction_writer.write('\t'.join(dst_tree[0])+'\n')
 		src_dst_no_restriction_writer.write('\t'.join(dst_tree[1])+'\n')
 		src_dst_no_restriction_writer.write('\t'.join(no_restriction_labels)+'\n')
 		src_dst_no_restriction_writer.write('\t'.join(no_restriction_heads)+'\n\n')
-	if pos_restriction_projection and not exception:
 		src_dst_pos_restriction_writer.write('\t'.join(dst_tree[0])+'\n')
 		src_dst_pos_restriction_writer.write('\t'.join(dst_tree[1])+'\n')
 		src_dst_pos_restriction_writer.write('\t'.join(pos_restriction_labels)+'\n')
 		src_dst_pos_restriction_writer.write('\t'.join(pos_restriction_heads)+'\n\n')
-	if pmi_restriction_projection and not exception:
-		src_dst_pmi_restriction_writer.write('\t'.join(dst_tree[0])+'\n')
-		src_dst_pmi_restriction_writer.write('\t'.join(dst_tree[1])+'\n')
-		src_dst_pmi_restriction_writer.write('\t'.join(pmi_restriction_labels)+'\n')
-		src_dst_pmi_restriction_writer.write('\t'.join(pmi_restriction_heads)+'\n\n')
-	if pmi2_restriction_projection and not exception:
-		src_dst_pmi2_restriction_writer.write('\t'.join(dst_tree[0])+'\n')
-		src_dst_pmi2_restriction_writer.write('\t'.join(dst_tree[1])+'\n')
-		src_dst_pmi2_restriction_writer.write('\t'.join(pmi2_restriction_labels)+'\n')
-		src_dst_pmi2_restriction_writer.write('\t'.join(pmi2_restriction_heads)+'\n\n')
-
+	else:
+		src_dst_no_restriction_writer.write('\t'.join(dst_tree[0])+'\n')
+		src_dst_no_restriction_writer.write('\t'.join(dst_tree[1])+'\n')
+		src_dst_no_restriction_writer.write('\t'.join(['_']*len(dst_tree[0]))+'\n')
+		src_dst_no_restriction_writer.write('\t'.join(['-1']*len(dst_tree[0]))+'\n\n')
+		src_dst_pos_restriction_writer.write('\t'.join(dst_tree[0])+'\n')
+		src_dst_pos_restriction_writer.write('\t'.join(dst_tree[1])+'\n')
+		src_dst_pos_restriction_writer.write('\t'.join(['_']*len(dst_tree[0]))+'\n')
+		src_dst_pos_restriction_writer.write('\t'.join(['-1']*len(dst_tree[0]))+'\n\n')	
 
 src_dst_no_restriction_writer.flush()
 src_dst_no_restriction_writer.close()
 src_dst_pos_restriction_writer.flush()
 src_dst_pos_restriction_writer.close()
-src_dst_pmi_restriction_writer.flush()
-src_dst_pmi_restriction_writer.close()
-src_dst_pmi2_restriction_writer.flush()
-src_dst_pmi2_restriction_writer.close()
 
 sys.stdout.write('\n')
 
-
-
 dst_src_no_restriction_writer=codecs.open(output_file_name+'.dst_src_no_restriction','w')
 dst_src_pos_restriction_writer=codecs.open(output_file_name+'.dst_src_pos_restriction','w')
-dst_src_pmi_restriction_writer=codecs.open(output_file_name+'.dst_src_pmi_restriction','w')
-dst_src_pmi2_restriction_writer=codecs.open(output_file_name+'.dst_src_pmi2_restriction','w')
-dst_src_pos_pmi_restriction_writer=codecs.open(output_file_name+'.dst_src_pos_pmi_restriction','w')
-dst_src_pos_pmi2_restriction_writer=codecs.open(output_file_name+'.dst_src_pos_pmi2_restriction','w')
-dst_src_pos_pmi_1_2_restriction_writer=codecs.open(output_file_name+'.dst_src_pos_pmi_1_2_restriction','w')
-
-
-
