@@ -5,13 +5,15 @@ from collections import defaultdict
 
 
 def show_help():
-	print 'python extract_trees.py [min_len] [input_data] [output_data] [is_labeled]'
+	print 'python extract_trees.py [min_len] [min_proportion] [input_data] [output_data] [is_labeled]'
 
 def is_projective(heads):
 	for dep1 in range(1,len(heads)+1):
 		head1=heads[dep1-1]
 		for dep2 in range(dep1+1,len(heads)+1):
 			head2=heads[dep2-1]
+			if head1==-1 or head2==-1:
+				continue
 			if dep1>head1 and head1!=head2:
 				if dep1>head2 and dep1<dep2 and head1<head2:
 					return False
@@ -23,6 +25,17 @@ def is_projective(heads):
 				if head1<head2 and head1>dep2 and dep1<dep2:
 					return False
 	return True
+
+def has_proportion(heads,min_proportion):
+	num=0
+	for dep1 in range(1,len(heads)+1):
+		if heads[dep1-1]>=0:
+			num+=1
+
+	prop=1.0/(len(heads)-1)
+	if is_projective(heads) and min_proportion<=prop:
+		return True
+	return False
 
 def extract_subtree(heads,min_len):
 	'''
@@ -69,7 +82,7 @@ def is_full_tree(heads):
 	return is_projective(heads)
 
 
-def extract_full_trees(input_path,output_path,min_len,is_labeled):
+def extract_full_trees(input_path,output_path,min_len,min_proportion,is_labeled):
 	trees=defaultdict()
 	reader=codecs.open(input_path,'r')
 	writer=codecs.open(output_path,'w')
@@ -85,7 +98,7 @@ def extract_full_trees(input_path,output_path,min_len,is_labeled):
 			if len(words)>0:
 				sentence=' '.join(words)
 				if not trees.has_key(sentence):
-					if is_full_tree(heads):
+					if is_full_tree(heads) or has_proportion(heads,min_proportion):
 						trees[sentence]=words,tags,labels,heads
 						new_heads=[str(i) for i in heads]
 						writer.write('\t'.join(words)+'\n')
@@ -100,7 +113,7 @@ def extract_full_trees(input_path,output_path,min_len,is_labeled):
 							if h!=-1:
 								has_subtree=True
 								break
-						if has_subtree:
+						if has_subtree and is_projective(new_heads):
 							heads=[str(i) for i in new_heads]
 							writer.write('\t'.join(words)+'\n')
 							writer.write('\t'.join(tags)+'\n')
@@ -131,14 +144,15 @@ def extract_full_trees(input_path,output_path,min_len,is_labeled):
 
 
 if __name__ == '__main__':
-	if len(sys.argv)<4:
+	if len(sys.argv)<5:
 		show_help()
 		sys.exit(0)
 	min_len=int(sys.argv[1])
-	input_path=os.path.abspath(sys.argv[2])
-	output_path=os.path.abspath(sys.argv[3])
+	min_proportion=float(sys.argv[2])
+	input_path=os.path.abspath(sys.argv[3])
+	output_path=os.path.abspath(sys.argv[4])
 	is_labeled=True
-	if sys.argv[4]=='false':
+	if sys.argv[5]=='false':
 		is_labeled=False
 
-	extract_full_trees(input_path,output_path,min_len,is_labeled)
+	extract_full_trees(input_path,output_path,min_len,min_proportion,is_labeled)
