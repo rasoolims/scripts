@@ -272,32 +272,49 @@ for s in src_alignment_dic.keys():
 	proportion=int(round(float((10*float(tree_len)/(len(dst_tree[0])-1))%10)))
 
 
-	for mod in align_dic.keys():
-		has_left='t'
-		has_right='t'
+	max_len=0
+	i=1
+	ln=0
+	while i<len(no_restriction_heads):
+		if no_restriction_heads[i]=='-1':
+			if ln>max_len:
+				max_len=ln
+			ln=0
+		else:
+			ln+=1
+		i+=1
 
-		if mod>1:
-			if no_restriction_heads[mod-1]=='-1':
-				has_left='f'
-		if mod<len(no_restriction_heads)-1:
-			if no_restriction_heads[mod+1]=='-1':
-				has_right='f'
-		align_dic[mod].insert(0,'hl:'+has_left)
-		align_dic[mod].insert(0,'hr:'+has_right)
-		align_dic[mod].insert(0,'pr:'+str(proportion))
-		align_dic[mod].insert(0,'tl:'+str(tree_len))
+	if ln>max_len:
+		max_len=ln
 
 
-		instance_lst=list()
-		for i in range(0,len(align_dic[mod])-1):
-			instance_lst.append(align_dic[mod][i].replace(':','|'))
-			#for j in range(0,len(align_dic[mod])-1):
-				#if i!=j:
-					#instance_lst.append((align_dic[mod][i]+'|'+align_dic[mod][j]).replace(':','|'))
+	if max_len>=7 or proportion>=8:
+		for mod in align_dic.keys():
+			has_left='t'
+			has_right='t'
 
-		instance_lst.append(align_dic[mod][len(align_dic[mod])-1])
+			if mod>1:
+				if no_restriction_heads[mod-1]=='-1':
+					has_left='f'
+			if mod<len(no_restriction_heads)-1:
+				if no_restriction_heads[mod+1]=='-1':
+					has_right='f'
+			align_dic[mod].insert(0,'hl:'+has_left)
+			align_dic[mod].insert(0,'hr:'+has_right)
+			align_dic[mod].insert(0,'pr:'+str(proportion))
+			align_dic[mod].insert(0,'tl:'+str(tree_len))
 
-		writer.write('\t'.join(instance_lst)+'\n')
+
+			instance_lst=list()
+			for i in range(0,len(align_dic[mod])-1):
+				instance_lst.append(align_dic[mod][i].replace(':','|'))
+				#for j in range(0,len(align_dic[mod])-1):
+					#if i!=j:
+						#instance_lst.append((align_dic[mod][i]+'|'+align_dic[mod][j]).replace(':','|'))
+
+			instance_lst.append(align_dic[mod][len(align_dic[mod])-1])
+
+			writer.write('\t'.join(instance_lst)+'\n')
 
 writer.flush()
 writer.close()

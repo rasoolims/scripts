@@ -10,6 +10,8 @@ labels=list()
 
 # reading data into features and labels
 print 'reading data into features and labels'
+sys.stdout.flush()
+
 line=reader.readline()
 while line:
 	line=line.strip()
@@ -23,18 +25,38 @@ while line:
 	line=reader.readline()
 
 print 'loading to the model files'
+sys.stdout.flush()
+
 classifier= pickle.load(open(model_path+'.model','rb'))
 vectorizer=pickle.load(open(model_path+'.bin','rb'))
 
 print 'binarizing features'
+sys.stdout.flush()
+
 bin_feats=vectorizer.transform(features)
 
 
 print 'predicting values'
+sys.stdout.flush()
+
 cor=0
 prediction=classifier.predict(bin_feats)
+
+false_positive=0
+true_positive=0
+true_negative=0
+false_negative=0
 for i in range(0,len(prediction)):
 	if labels[i]==prediction[i]:
 		cor+=1
+		if labels[i]==1:
+			true_positive+=1
+		else:
+			true_negative+=1
+	elif labels[i]==1:
+		false_positive+=1
+	else:
+		false_negative+=1
 
 print cor,len(prediction)
+print true_positive,true_negative,false_positive,false_negative
