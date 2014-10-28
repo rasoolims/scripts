@@ -1,5 +1,6 @@
 import os,sys,math,operator,codecs,traceback
 from collections import defaultdict
+from avg_perceptron import avg_perceptron
 
 def read_pos_map(path):
 	pos_map=defaultdict(str)
@@ -12,22 +13,25 @@ def read_pos_map(path):
 		line=map_reader.readline()
 	return pos_map
 
-if len(sys.argv)<5:
-	print 'python create_projection_instances.py [src_mst_file] [dst_mst_file] [align_intersection_file] [src_pos_map] [dst_pos_map] [output_file_name] [is_labeled]'
+if len(sys.argv)<8:
+	print 'python project_alignment_with_meta_classifier.py [learning_model_file] [src_mst_file] [dst_mst_file] [align_intersection_file] [src_pos_map] [dst_pos_map] [output_file_name] [is_labeled]'
 	sys.exit(0)
 
-src_mst_reader=codecs.open(os.path.abspath(sys.argv[1]),'r')
-dst_mst_reader=codecs.open(os.path.abspath(sys.argv[2]),'r')
-align_reader=codecs.open(os.path.abspath(sys.argv[3]),'r')
+classfier=avg_perceptron(os.path.abspath(sys.argv[1]))
+classfier.labels=set(['0','1'])
 
-src_pos_map=read_pos_map(os.path.abspath(sys.argv[4]))
-dst_pos_map=read_pos_map(os.path.abspath(sys.argv[5]))
+src_mst_reader=codecs.open(os.path.abspath(sys.argv[2]),'r')
+dst_mst_reader=codecs.open(os.path.abspath(sys.argv[3]),'r')
+align_reader=codecs.open(os.path.abspath(sys.argv[4]),'r')
+
+src_pos_map=read_pos_map(os.path.abspath(sys.argv[5]))
+dst_pos_map=read_pos_map(os.path.abspath(sys.argv[6]))
 
 
-output_file_name=os.path.abspath(sys.argv[6])
+output_file_name=os.path.abspath(sys.argv[7])
 
 labeled=False
-if len(sys.argv)>7 and sys.argv[7]=='labeled':
+if len(sys.argv)>8 and sys.argv[8]=='labeled':
 	labeled=True
 
 prob_dict=defaultdict()
@@ -80,7 +84,9 @@ while line:
 	if line:
 		line_count+=1
 		words=line.split('\t')
-		tags=dst_mst_reader.readline().strip().split('\t')
+		tl=dst_mst_reader.readline().strip()
+		tags=tl.split('\t')
+		main_tags=tl.split('\t')
 		for t in range(0,len(tags)):
 			if dst_pos_map.has_key(tags[t]):
 				tags[t]=dst_pos_map[tags[t]]
@@ -89,9 +95,9 @@ while line:
 		hds=dst_mst_reader.readline().strip().split('\t')
 		heads=list()
 		for h in hds:
-			heads.append(int(round(float(h))))
+			heads.append(-1)
 
-		dst_trees[line_count]=words,tags,labels,heads
+		dst_trees[line_count]=words,tags,labels,heads,main_tags
 		if line_count%100000==0:
 			sys.stdout.write(str(line_count)+'...')
 			sys.stdout.flush()
@@ -163,7 +169,7 @@ for s in src_alignment_dic.keys():
 		if alignment.has_key(src_mod) and alignment.has_key(src_head):
 			instance_lst=list()
 			dst_head=alignment[src_head]
-			dst_mod=alignment[src_mod]	
+			dst_mod=alignment[src_mod]
 			
 			src_distance=abs(src_mod-src_head)
 			#if src_distance>10:
@@ -286,13 +292,10 @@ for s in src_alignment_dic.keys():
 					#len_diff=5
 				instance_lst.append('ld:'+str(len_diff))
 
-				instance_lst.append(lab)
-
 				align_dic[dst_mod-1]=instance_lst
 
-				no_restriction_heads[dst_mod-1]=str(dst_head)#+':'+str(confidence)
+				no_restriction_heads[dst_mod-1]=str(dst_head)
 				no_restriction_labels[dst_mod-1]=src_label
-				#writer.write('\t'.join(instance_lst)+'\n')
 			except:
 				print src_tree[1]
 				print ' '.join(dst_tree[0])
@@ -301,11 +304,9 @@ for s in src_alignment_dic.keys():
 				print s
 				exception=True
 				print traceback.format_exc()
-				#sys.exit(0)
 
 	tree_len=len(align_dic)
 	proportion=int(round(float((10*float(tree_len)/(len(dst_tree[0])-1))%10)))
-
 
 	max_len=0
 	i=1
@@ -323,6 +324,7 @@ for s in src_alignment_dic.keys():
 		max_len=ln
 
 
+	fin_feats=dict()
 	if max_len>=0 or proportion>=0:
 		for mod in align_dic.keys():
 			has_left='t'
@@ -337,19 +339,30 @@ for s in src_alignment_dic.keys():
 			align_dic[mod].insert(0,'hl:'+has_left)
 			align_dic[mod].insert(0,'hr:'+has_right)
 			align_dic[mod].insert(0,'pr:'+str(proportion))
-			#align_dic[mod].insert(0,'tl:'+str(tree_len))
-
 
 			instance_lst=list()
-			for i in range(0,len(align_dic[mod])-1):
+			for i in range(0,len(align_dic[mod])):
 				instance_lst.append(align_dic[mod][i].replace(':','|'))
-				#for j in range(0,len(align_dic[mod])-1):
-					#if i!=j:
-						#instance_lst.append((align_dic[mod][i]+'|'+align_dic[mod][j]).replace(':','|'))
+			fin_feats[mod]=instance_lst
+	for i in range(0,len(dst_tree[0])):
+		#if not fin_feats.has_key(i):
+			#print 'no for '+str(i)
 
-			instance_lst.append(align_dic[mod][len(align_dic[mod])-1])
+		if not fin_feats.has_key(i) or classfier.argmax(fin_feats[i],True)=='0':
+			dst_tree[3][i]='-1'
+			dst_tree[2][i]='_'
+			#print 'classfier is not ok with '+str(i)
+		else:
+			dst_tree[3][i]=str(no_restriction_heads[i])
+			dst_tree[2][i]=no_restriction_labels[i]
+			#print 'classfier is ok with '+str(i)
 
-			writer.write('\t'.join(instance_lst)+'\n')
+	writer.write('\t'.join(dst_tree[0])+'\n')
+	writer.write('\t'.join(dst_tree[4])+'\n')
+	writer.write('\t'.join(dst_tree[2])+'\n')
+	writer.write('\t'.join(dst_tree[3])+'\n\n')
+
+	#sys.exit(0)
 
 writer.flush()
 writer.close()

@@ -1,9 +1,30 @@
 import os,sys,math,operator,codecs,traceback
 from collections import defaultdict
 
+def is_projective(heads):
+	for dep1 in range(1,len(heads)+1):
+		head1=heads[dep1-1]
+		for dep2 in range(dep1+1,len(heads)+1):
+			head2=heads[dep2-1]
+			if head1==-1 or head2==-1:
+				continue
+			if dep1>head1 and head1!=head2:
+				if dep1>head2 and dep1<dep2 and head1<head2:
+					return False
+				if dep1<head2 and dep1>dep2 and head1<dep2:
+					return False
+			if dep1<head1 and head1!=head2:
+				if head1>head2 and head1<dep2 and dep1<head2:
+					return False
+				if head1<head2 and head1>dep2 and dep1<dep2:
+					return False
+	return True
+
 if len(sys.argv)<3:
 	print 'python tree_diff.py [src_mst_file] [dst_mst_file] [matched_trees]'
 	sys.exit(0)
+
+
 
 src_mst_reader=codecs.open(os.path.abspath(sys.argv[1]),'r')
 dst_mst_reader=codecs.open(os.path.abspath(sys.argv[2]),'r')
@@ -65,7 +86,7 @@ while line:
 			if dst_heads[i]==-1:
 				is_complete=False
 
-		if is_complete:
+		if is_complete and is_projective(dst_heads):
 			full_proj_tree_writer.write('\t'.join(words)+'\n')
 			full_proj_tree_writer.write('\t'.join(tags)+'\n')
 			full_proj_tree_writer.write('\t'.join(dst_labels)+'\n')
@@ -81,8 +102,6 @@ while line:
 					all_complete_deps+=1
 					if dst_heads[i]==heads[i]:
 						all_correct_complete_deps+=1
-
-
 
 		matched_mst_writer.write('\t'.join(words)+'\n')
 		matched_mst_writer.write('\t'.join(tags)+'\n')

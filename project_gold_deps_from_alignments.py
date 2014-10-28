@@ -2,7 +2,8 @@ import os,sys,math,operator,codecs,traceback
 from collections import defaultdict
 
 if len(sys.argv)<5:
-	print 'python project_alignment.py [src_mst_file] [dst_mst_file] [align_intersection_file] [output_file_name]'
+	print 'python project_gold_deps_from_alignments.py [src_mst_file] [dst_mst_file] [align_intersection_file] [output_file_name]'
+	print 'by looking at dst trees, just keeps the ones that are preserved in the alignment in dst trees'
 	sys.exit(0)
 
 src_mst_reader=codecs.open(os.path.abspath(sys.argv[1]),'r')
@@ -104,6 +105,8 @@ src_dst_pos_restriction_writer=codecs.open(output_file_name+'.src_dst_pos_restri
 sys.stdout.write('getting src projections...')
 sys.stdout.flush()
 
+alldeps=0
+preserved_deps=0
 for s in src_alignment_dic.keys():
 	if s%10000==0:
 		sys.stdout.write(str(s)+'...')
@@ -115,7 +118,6 @@ for s in src_alignment_dic.keys():
 	no_restriction_heads=list()
 	no_restriction_labels=list()
 	no_restriction_confidence=list()
-	no_restriction_projection=False
 
 	pos_restriction_heads=list()
 	pos_restriction_labels=list()
@@ -149,8 +151,6 @@ for s in src_alignment_dic.keys():
 			
 			try:
 				# no restriction
-				no_restriction_labels[dst_mod-1]=src_label
-				no_restriction_projection=True
 				dst_mod_pos=dst_tree[1][dst_mod-1]
 				dst_mod_word=dst_tree[0][dst_mod-1]
 				dst_head_pos='ROOT'
@@ -160,13 +160,17 @@ for s in src_alignment_dic.keys():
 					dst_head_word=dst_tree[0][dst_head-1]
 				mod_pair=src_word+'\t'+dst_mod_word
 				head_pair=src_head_word+'\t'+dst_head_word
-				no_restriction_heads[dst_mod-1]=str(dst_head)#+':'+str(confidence)
+				alldeps+=1
 
-				# pos restriction
-				if src_pos==dst_mod_pos and src_head_pos==dst_head_pos:
-					pos_restriction_heads[dst_mod-1]=str(dst_head)
-					pos_restriction_labels[dst_mod-1]=src_label
-					pos_restriction_projection=True
+				if dst_tree[3][dst_mod-1]==dst_head:
+					no_restriction_heads[dst_mod-1]=str(dst_head)
+					no_restriction_labels[dst_mod-1]=src_label
+					preserved_deps+=1
+					# pos restriction
+					if src_pos==dst_mod_pos and src_head_pos==dst_head_pos:
+						pos_restriction_heads[dst_mod-1]=str(dst_head)
+						pos_restriction_labels[dst_mod-1]=src_label
+						pos_restriction_projection=True
 			except:
 				print src_tree[1]
 				print ' '.join(dst_tree[0])
@@ -191,4 +195,6 @@ for s in src_alignment_dic.keys():
 
 src_dst_no_restriction_writer.flush()
 src_dst_no_restriction_writer.close()
+
+sys.stdout.write('\nalldeps: '+str(alldeps)+' preserved_deps: '+str(preserved_deps))
 sys.stdout.write('\n')
