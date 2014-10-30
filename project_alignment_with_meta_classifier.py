@@ -172,31 +172,31 @@ for s in src_alignment_dic.keys():
 			dst_mod=alignment[src_mod]
 			
 			src_distance=abs(src_mod-src_head)
-			#if src_distance>10:
-				#src_distance=10
-			#elif src_distance>5:
-				#src_distance=5
+			if src_distance>10:
+				src_distance=10
+			elif src_distance>5:
+				src_distance=5
 			instance_lst.append('sd:'+str(src_distance))
 
 			dst_distance=abs(dst_mod-dst_head)
-			#if dst_distance>10:
-				#dst_distance=10
-			#elif dst_distance>5:
-				#dst_distance=5
+			if dst_distance>10:
+				dst_distance=10
+			elif dst_distance>5:
+				dst_distance=5
 			instance_lst.append('dd:'+str(dst_distance))
 
 			mod_distance=abs(src_mod-dst_mod)
-			#if mod_distance>10:
-				#mod_distance=10
-			#elif mod_distance>5:
-				#mod_distance=5
+			if mod_distance>10:
+				mod_distance=10
+			elif mod_distance>5:
+				mod_distance=5
 			instance_lst.append('md:'+str(mod_distance))
 
 			head_distance=abs(src_head-dst_head)
-			#if head_distance>10:
-				#head_distance=10
-			#elif head_distance>5:
-				#head_distance=5
+			if head_distance>10:
+				head_distance=10
+			elif head_distance>5:
+				head_distance=5
 			instance_lst.append('hd:'+str(head_distance))
 
 			src_direction='l'
@@ -286,10 +286,10 @@ for s in src_alignment_dic.keys():
 				#instance_lst.append('dl:'+str(dst_len))
 
 				len_diff=dst_len-len(src_tree[1])
-				#if len_diff>10:
-					#len_diff=10
-				#elif len_diff>5:
-					#len_diff=5
+				if len_diff>10:
+					len_diff=10
+				elif len_diff>5:
+					len_diff=5
 				instance_lst.append('ld:'+str(len_diff))
 
 				align_dic[dst_mod-1]=instance_lst
@@ -347,8 +347,10 @@ for s in src_alignment_dic.keys():
 	for i in range(0,len(dst_tree[0])):
 		#if not fin_feats.has_key(i):
 			#print 'no for '+str(i)
-
-		if not fin_feats.has_key(i) or classfier.argmax(fin_feats[i],True)=='0':
+		if proportion>9:
+			dst_tree[3][i]=str(no_restriction_heads[i])
+			dst_tree[2][i]=no_restriction_labels[i]
+		elif not fin_feats.has_key(i) or classfier.argmax(fin_feats[i],True)=='0':
 			dst_tree[3][i]='-1'
 			dst_tree[2][i]='_'
 			#print 'classfier is not ok with '+str(i)

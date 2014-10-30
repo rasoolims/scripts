@@ -166,31 +166,31 @@ for s in src_alignment_dic.keys():
 			dst_mod=alignment[src_mod]	
 			
 			src_distance=abs(src_mod-src_head)
-			#if src_distance>10:
-				#src_distance=10
-			#elif src_distance>5:
-				#src_distance=5
+			if src_distance>10:
+				src_distance=10
+			elif src_distance>5:
+				src_distance=5
 			instance_lst.append('sd:'+str(src_distance))
 
 			dst_distance=abs(dst_mod-dst_head)
-			#if dst_distance>10:
-				#dst_distance=10
-			#elif dst_distance>5:
-				#dst_distance=5
+			if dst_distance>10:
+				dst_distance=10
+			elif dst_distance>5:
+				dst_distance=5
 			instance_lst.append('dd:'+str(dst_distance))
 
 			mod_distance=abs(src_mod-dst_mod)
-			#if mod_distance>10:
-				#mod_distance=10
-			#elif mod_distance>5:
-				#mod_distance=5
+			if mod_distance>10:
+				mod_distance=10
+			elif mod_distance>5:
+				mod_distance=5
 			instance_lst.append('md:'+str(mod_distance))
 
 			head_distance=abs(src_head-dst_head)
-			#if head_distance>10:
-				#head_distance=10
-			#elif head_distance>5:
-				#head_distance=5
+			if head_distance>10:
+				head_distance=10
+			elif head_distance>5:
+				head_distance=5
 			instance_lst.append('hd:'+str(head_distance))
 
 			src_direction='l'
@@ -280,10 +280,10 @@ for s in src_alignment_dic.keys():
 				#instance_lst.append('dl:'+str(dst_len))
 
 				len_diff=dst_len-len(src_tree[1])
-				#if len_diff>10:
-					#len_diff=10
-				#elif len_diff>5:
-					#len_diff=5
+				if len_diff>10:
+					len_diff=10
+				elif len_diff>5:
+					len_diff=5
 				instance_lst.append('ld:'+str(len_diff))
 
 				instance_lst.append(lab)
@@ -349,7 +349,10 @@ for s in src_alignment_dic.keys():
 
 			instance_lst.append(align_dic[mod][len(align_dic[mod])-1])
 
+			#if s>1:
 			writer.write('\t'.join(instance_lst)+'\n')
+	#if s>=2:
+		#sys.exit(0)
 
 writer.flush()
 writer.close()

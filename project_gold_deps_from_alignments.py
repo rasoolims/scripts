@@ -98,8 +98,7 @@ sys.stdout.write('\n')
 
 
 # initializing different types of outputs
-src_dst_no_restriction_writer=codecs.open(output_file_name+'.src_dst_no_restriction','w')
-src_dst_pos_restriction_writer=codecs.open(output_file_name+'.src_dst_pos_restriction','w')
+src_dst_no_restriction_writer=codecs.open(output_file_name,'w')
 
 # getting src projections
 sys.stdout.write('getting src projections...')
@@ -117,20 +116,16 @@ for s in src_alignment_dic.keys():
 
 	no_restriction_heads=list()
 	no_restriction_labels=list()
-	no_restriction_confidence=list()
-
-	pos_restriction_heads=list()
-	pos_restriction_labels=list()
-	pos_restriction_projection=False
+	proj_no_restriction_heads=list()
+	proj_no_restriction_labels=list()
 
 	exception=False
 
 	for mod in range(0,len(dst_tree[0])):
 		no_restriction_heads.append('-1')
 		no_restriction_labels.append("_")
-		no_restriction_confidence.append(1.0)
-		pos_restriction_heads.append('-1')
-		pos_restriction_labels.append("_")
+		proj_no_restriction_heads.append('-1')
+		proj_no_restriction_labels.append("_")
 
 	for mod in range(0,len(src_tree[0])):
 		src_head=src_tree[3][mod]
@@ -162,15 +157,13 @@ for s in src_alignment_dic.keys():
 				head_pair=src_head_word+'\t'+dst_head_word
 				alldeps+=1
 
+				proj_no_restriction_heads[dst_mod-1]=str(dst_head)
+				proj_no_restriction_labels[dst_mod-1]=src_label
+
 				if dst_tree[3][dst_mod-1]==dst_head:
 					no_restriction_heads[dst_mod-1]=str(dst_head)
 					no_restriction_labels[dst_mod-1]=src_label
 					preserved_deps+=1
-					# pos restriction
-					if src_pos==dst_mod_pos and src_head_pos==dst_head_pos:
-						pos_restriction_heads[dst_mod-1]=str(dst_head)
-						pos_restriction_labels[dst_mod-1]=src_label
-						pos_restriction_projection=True
 			except:
 				print src_tree[1]
 				print ' '.join(dst_tree[0])
@@ -180,6 +173,17 @@ for s in src_alignment_dic.keys():
 				exception=True
 				print traceback.format_exc()
 				#sys.exit(0)
+
+	# still keeping full trees regardless of its validity
+	all_dep=True
+	for h in proj_no_restriction_heads:
+		if h==-1 or h=='-1':
+			all_dep=False
+			break
+	if all_dep:
+		no_restriction_labels=proj_no_restriction_labels
+		no_restriction_heads=proj_no_restriction_heads
+
 
 	# no restriction output
 	if not exception:

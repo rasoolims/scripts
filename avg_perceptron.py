@@ -5,7 +5,7 @@ class avg_perceptron:
 	def __init__(self,model_path='',label_path=''):
 		self.avg_weights=self.load_model(model_path)
 		self.labels=self.load_labels(label_path)
-		self.weights=defaultdict(float)
+		self.weights=defaultdict(int)
 		self.iteration=1
 
 	def update_weight(self,feature,update):
@@ -49,9 +49,13 @@ class avg_perceptron:
 		ms=-float('inf')
 		for label in self.labels:
 			score=self.score(features,label,is_decode)
+			#if is_decode:
+				#print label,score,is_decode
 			if score>ms:
 				ms=score
 				am=label
+		#if is_decode:
+			#print 'argmax:',am,ms
 		return am
 
 	def size(self):
@@ -104,11 +108,12 @@ if __name__=='__main__':
 		sys.stdout.write('loading the model...')
 		sys.stdout.flush()
 		dap=avg_perceptron(model_path+'.model_'+str(iteration+1),model_path+'.lab')
+		# print dap.avg_weights
 		sys.stdout.write('done!\n')
 		sys.stdout.flush()
 		dev_reader=codecs.open(dev_path,'r')
 		line=dev_reader.readline()
-		
+
 		true_pos=0
 		true_neg=0
 		false_pos=0
@@ -128,12 +133,12 @@ if __name__=='__main__':
 					sys.stdout.write(str(cnt)+'...')
 					sys.stdout.flush()
 				label=flds[-1]
-				ap.labels.add(label)
 				feats=flds[:-1]
 
-				argmax=ap.argmax(feats,True)
+				argmax=dap.argmax(feats,True) #todo
 				all_lab+=1
 				if argmax==label:
+					#print 'correct',argmax,label
 					correct+=1
 					if argmax=='1':
 						true_pos+=1
@@ -142,6 +147,7 @@ if __name__=='__main__':
 						true_neg+=1
 						all_neg+=1
 				else:
+					#print 'incorrect',argmax,label
 					if argmax=='0':
 						false_neg+=1
 						all_pos+=1
@@ -152,16 +158,20 @@ if __name__=='__main__':
 
 			line=dev_reader.readline()
 		accuracy=100.0*float(correct)/cnt
-		accuracy=100.0*float(true_pos+true_neg)/all_lab
-		recall=100.0*float(true_pos)/all_pos
-		precision=100.0*float(true_pos)/(true_pos+false_pos)
-		true_negative_rate=100.0*float(true_neg)/(true_neg+false_pos)
 		sys.stdout.write('\naccuracy of dev for iteration '+str(iteration+1)+': '+str(accuracy)+'\n')
-		sys.stdout.write('recall of dev for iteration '+str(iteration+1)+': '+str(recall)+'\n')
-		sys.stdout.write('precision of dev for iteration '+str(iteration+1)+': '+str(precision)+'\n')
-		sys.stdout.write('true_negative_rate of dev for iteration '+str(iteration+1)+': '+str(true_negative_rate)+'\n')
-		lst=[str(true_pos),str(true_neg),str(false_pos),str(false_neg),str(all_lab)]
-		sys.stdout.write('tp,tn,fp,fn,all_lab: '+' '.join(lst)+'\n')
+		try:
+			accuracy=100.0*float(true_pos+true_neg)/all_lab
+			recall=100.0*float(true_pos)/all_pos
+			precision=100.0*float(true_pos)/(true_pos+false_pos)
+			true_negative_rate=100.0*float(true_neg)/(true_neg+false_pos)
+			sys.stdout.write('\naccuracy of dev for iteration '+str(iteration+1)+': '+str(accuracy)+'\n')
+			sys.stdout.write('recall of dev for iteration '+str(iteration+1)+': '+str(recall)+'\n')
+			sys.stdout.write('precision of dev for iteration '+str(iteration+1)+': '+str(precision)+'\n')
+			sys.stdout.write('true_negative_rate of dev for iteration '+str(iteration+1)+': '+str(true_negative_rate)+'\n')
+			lst=[str(true_pos),str(true_neg),str(false_pos),str(false_neg),str(all_lab)]
+			sys.stdout.write('tp,tn,fp,fn,all_lab: '+' '.join(lst)+'\n')
+		except:
+			print ''
 	sys.stdout.write('\n'+str(ap.size())+'\n')
 	sys.stdout.flush()
 
