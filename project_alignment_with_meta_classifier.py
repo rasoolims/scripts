@@ -311,8 +311,10 @@ for s in src_alignment_dic.keys():
 	max_len=0
 	i=1
 	ln=0
+	is_full=True
 	while i<len(no_restriction_heads):
 		if no_restriction_heads[i]=='-1':
+			is_full=False
 			if ln>max_len:
 				max_len=ln
 			ln=0
@@ -347,7 +349,7 @@ for s in src_alignment_dic.keys():
 	for i in range(0,len(dst_tree[0])):
 		#if not fin_feats.has_key(i):
 			#print 'no for '+str(i)
-		if proportion>9:
+		if is_full:
 			dst_tree[3][i]=str(no_restriction_heads[i])
 			dst_tree[2][i]=no_restriction_labels[i]
 		elif not fin_feats.has_key(i) or classfier.argmax(fin_feats[i],True)=='0':

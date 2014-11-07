@@ -14,8 +14,8 @@ for sen in sens:
 	for l in lines:
 		split_line=l.split('\t')
 		if len(split_line)>1:
-			split_line[3]=tagged_words[w_cntr].split('_')[1]
-			split_line[4]=tagged_words[w_cntr].split('_')[1]
+			split_line[3]=tagged_words[w_cntr].split('_')[-1]
+			split_line[4]=tagged_words[w_cntr].split('_')[-1]
 			w_cntr+=1
 		words.append('\t'.join(split_line))
 
