@@ -1,6 +1,6 @@
 import os,sys,math,operator,codecs,traceback
 from collections import defaultdict
-from avg_perceptron import avg_perceptron
+from bin_avg_perceptron import bin_avg_perceptron
 
 def read_pos_map(path):
 	pos_map=defaultdict(str)
@@ -13,12 +13,31 @@ def read_pos_map(path):
 		line=map_reader.readline()
 	return pos_map
 
-if len(sys.argv)<8:
-	print 'python project_alignment_with_meta_classifier.py [learning_model_file] [src_mst_file] [dst_mst_file] [align_intersection_file] [src_pos_map] [dst_pos_map] [output_file_name] [is_labeled]'
+def is_projective(heads):
+	for dep1 in range(1,len(heads)+1):
+		head1=heads[dep1-1]
+		for dep2 in range(dep1+1,len(heads)+1):
+			head2=heads[dep2-1]
+			if head1==-1 or head2==-1:
+				continue
+			if dep1>head1 and head1!=head2:
+				if dep1>head2 and dep1<dep2 and head1<head2:
+					return False
+				if dep1<head2 and dep1>dep2 and head1<dep2:
+					return False
+			if dep1<head1 and head1!=head2:
+				if head1>head2 and head1<dep2 and dep1<head2:
+					return False
+				if head1<head2 and head1>dep2 and dep1<dep2:
+					return False
+	return True
+
+if len(sys.argv)<9:
+	print 'python project_alignment_with_meta_classifier.py [learning_model_file] [src_mst_file] [dst_mst_file] [align_intersection_file] [src_pos_map] [dst_pos_map] [output_file_name] [is_labeled] [beta]'
 	sys.exit(0)
 
-classfier=avg_perceptron(os.path.abspath(sys.argv[1]))
-classfier.labels=set(['0','1'])
+classfier=bin_avg_perceptron(0,os.path.abspath(sys.argv[1]))
+print classfier.avg_bias
 
 src_mst_reader=codecs.open(os.path.abspath(sys.argv[2]),'r')
 dst_mst_reader=codecs.open(os.path.abspath(sys.argv[3]),'r')
@@ -28,11 +47,17 @@ src_pos_map=read_pos_map(os.path.abspath(sys.argv[5]))
 dst_pos_map=read_pos_map(os.path.abspath(sys.argv[6]))
 
 
+correct_deps=0
+wrong_deps=0
+
+
 output_file_name=os.path.abspath(sys.argv[7])
 
 labeled=False
 if len(sys.argv)>8 and sys.argv[8]=='labeled':
 	labeled=True
+
+beta=float(sys.argv[9])
 
 prob_dict=defaultdict()
 
@@ -97,7 +122,7 @@ while line:
 		for h in hds:
 			heads.append(-1)
 
-		dst_trees[line_count]=words,tags,labels,heads,main_tags
+		dst_trees[line_count]=words,tags,labels,heads,main_tags,hds
 		if line_count%100000==0:
 			sys.stdout.write(str(line_count)+'...')
 			sys.stdout.flush()
@@ -312,6 +337,8 @@ for s in src_alignment_dic.keys():
 	i=1
 	ln=0
 	is_full=True
+
+
 	while i<len(no_restriction_heads):
 		if no_restriction_heads[i]=='-1':
 			is_full=False
@@ -346,27 +373,41 @@ for s in src_alignment_dic.keys():
 			for i in range(0,len(align_dic[mod])):
 				instance_lst.append(align_dic[mod][i].replace(':','|'))
 			fin_feats[mod]=instance_lst
-	for i in range(0,len(dst_tree[0])):
-		#if not fin_feats.has_key(i):
-			#print 'no for '+str(i)
-		if is_full:
+	
+	if not is_full:
+		for i in range(0,len(dst_tree[0])):
+			orig=dst_tree[5][i]
+			if not fin_feats.has_key(i) or classfier.label(fin_feats[i],True,beta)=='0':
+				dst_tree[3][i]='-1'
+				dst_tree[2][i]='_'
+				#print 'classfier is not ok with '+str(i)
+			else:
+				if str(no_restriction_heads[i])==orig:
+					correct_deps+=1
+				else:
+					wrong_deps+=1
+				dst_tree[3][i]=str(no_restriction_heads[i])
+				dst_tree[2][i]=no_restriction_labels[i]
+				#print 'classfier is ok with '+str(i)
+	else:
+		for i in range(0,len(dst_tree[0])):
 			dst_tree[3][i]=str(no_restriction_heads[i])
 			dst_tree[2][i]=no_restriction_labels[i]
-		elif not fin_feats.has_key(i) or classfier.argmax(fin_feats[i],True)=='0':
-			dst_tree[3][i]='-1'
-			dst_tree[2][i]='_'
-			#print 'classfier is not ok with '+str(i)
-		else:
-			dst_tree[3][i]=str(no_restriction_heads[i])
-			dst_tree[2][i]=no_restriction_labels[i]
-			#print 'classfier is ok with '+str(i)
+
+	hds=list()
+	for x in range(0,len(dst_tree[3])):
+		hds.append(int(dst_tree[3][x]))
+
+	is_proj=is_projective(hds)
+	if not is_proj:
+		continue
 
 	writer.write('\t'.join(dst_tree[0])+'\n')
 	writer.write('\t'.join(dst_tree[4])+'\n')
 	writer.write('\t'.join(dst_tree[2])+'\n')
 	writer.write('\t'.join(dst_tree[3])+'\n\n')
 
-	#sys.exit(0)
+print correct_deps,wrong_deps
 
 writer.flush()
 writer.close()

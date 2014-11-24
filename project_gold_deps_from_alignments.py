@@ -2,7 +2,7 @@ import os,sys,math,operator,codecs,traceback
 from collections import defaultdict
 
 if len(sys.argv)<5:
-	print 'python project_gold_deps_from_alignments.py [src_mst_file] [dst_mst_file] [align_intersection_file] [output_file_name]'
+	print 'python project_gold_deps_from_alignments.py [src_mst_file] [dst_mst_file] [align_intersection_file] [output_file_name] [keep_full(bool)] '
 	print 'by looking at dst trees, just keeps the ones that are preserved in the alignment in dst trees'
 	sys.exit(0)
 
@@ -10,6 +10,7 @@ src_mst_reader=codecs.open(os.path.abspath(sys.argv[1]),'r')
 dst_mst_reader=codecs.open(os.path.abspath(sys.argv[2]),'r')
 align_reader=codecs.open(os.path.abspath(sys.argv[3]),'r')
 output_file_name=os.path.abspath(sys.argv[4])
+keep_full=True if sys.argv[5]=='true' else False
 
 prob_dict=defaultdict()
 
@@ -121,11 +122,14 @@ for s in src_alignment_dic.keys():
 
 	exception=False
 
+	is_full=True
 	for mod in range(0,len(dst_tree[0])):
 		no_restriction_heads.append('-1')
 		no_restriction_labels.append("_")
 		proj_no_restriction_heads.append('-1')
 		proj_no_restriction_labels.append("_")
+		if dst_tree[3][mod]=='-1' or dst_tree[3][mod]==-1:
+			is_full=False
 
 	for mod in range(0,len(src_tree[0])):
 		src_head=src_tree[3][mod]
@@ -160,7 +164,7 @@ for s in src_alignment_dic.keys():
 				proj_no_restriction_heads[dst_mod-1]=str(dst_head)
 				proj_no_restriction_labels[dst_mod-1]=src_label
 
-				if dst_tree[3][dst_mod-1]==dst_head:
+				if dst_tree[3][dst_mod-1]==dst_head or (is_full and keep_full):
 					no_restriction_heads[dst_mod-1]=str(dst_head)
 					no_restriction_labels[dst_mod-1]=src_label
 					preserved_deps+=1

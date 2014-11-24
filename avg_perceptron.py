@@ -15,9 +15,11 @@ class avg_perceptron:
 	def score(self,features,label,is_decode):
 		score=0
 		if is_decode:
+			score+=self.avg_weights['label:'+label]
 			for feature in features:
 				score+=self.avg_weights[feature+'_'+label]
 		else:
+			score+=self.weights['label:'+label]
 			for feature in features:
 				score+=self.weights[feature+'_'+label]
 		return score
@@ -28,7 +30,7 @@ class avg_perceptron:
 	def save_model(self,model_path,lab_path):
 		avg=defaultdict(float)
 		for feature in self.weights.keys():
-			avg[feature]=self.weights[feature]-self.avg_weights[feature]/self.iteration
+			avg[feature]=float(self.weights[feature])-float(self.avg_weights[feature])/self.iteration
 		pickle.dump(avg,open(model_path,'wb'))
 		pickle.dump(self.labels,open(lab_path,'wb'))
 
@@ -90,6 +92,8 @@ if __name__=='__main__':
 
 				argmax=ap.argmax(feats,False)
 				if argmax!=label:
+					ap.update_weight('label:'+label,1.0)
+					ap.update_weight('label:'+argmax,-1.0)
 					for feature in feats:
 						ap.update_weight(feature+'_'+label,1.0)
 						ap.update_weight(feature+'_'+argmax,-1.0)
@@ -159,19 +163,23 @@ if __name__=='__main__':
 			line=dev_reader.readline()
 		accuracy=100.0*float(correct)/cnt
 		sys.stdout.write('\naccuracy of dev for iteration '+str(iteration+1)+': '+str(accuracy)+'\n')
-		try:
-			accuracy=100.0*float(true_pos+true_neg)/all_lab
-			recall=100.0*float(true_pos)/all_pos
+		sys.stdout.write('\nap iteration '+str(ap.iteration)+'\n')
+		sys.stdout.write('bias/avg_bias(1) '+str(ap.weights['label:1'])+' / '+str(dap.avg_weights['label:1'])+'\n')
+		sys.stdout.write('bias/avg_bias(0) '+str(ap.weights['label:0'])+' / '+str(dap.avg_weights['label:0'])+'\n')
+		accuracy=100.0*float(true_pos+true_neg)/all_lab
+		recall=100.0*float(true_pos)/all_pos
+		precision=0.0
+		true_negative_rate=0.0
+		if true_pos+false_pos>0:
 			precision=100.0*float(true_pos)/(true_pos+false_pos)
-			true_negative_rate=100.0*float(true_neg)/(true_neg+false_pos)
-			sys.stdout.write('\naccuracy of dev for iteration '+str(iteration+1)+': '+str(accuracy)+'\n')
-			sys.stdout.write('recall of dev for iteration '+str(iteration+1)+': '+str(recall)+'\n')
-			sys.stdout.write('precision of dev for iteration '+str(iteration+1)+': '+str(precision)+'\n')
-			sys.stdout.write('true_negative_rate of dev for iteration '+str(iteration+1)+': '+str(true_negative_rate)+'\n')
-			lst=[str(true_pos),str(true_neg),str(false_pos),str(false_neg),str(all_lab)]
-			sys.stdout.write('tp,tn,fp,fn,all_lab: '+' '.join(lst)+'\n')
-		except:
-			print ''
+		if true_neg+false_neg>0:
+			true_negative_rate=100.0*float(true_neg)/(true_neg+false_neg)
+		sys.stdout.write('\naccuracy of dev for iteration '+str(iteration+1)+': '+str(accuracy)+'\n')
+		sys.stdout.write('recall of dev for iteration '+str(iteration+1)+': '+str(recall)+'\n')
+		sys.stdout.write('precision of dev for iteration '+str(iteration+1)+': '+str(precision)+'\n')
+		sys.stdout.write('true_negative_rate of dev for iteration '+str(iteration+1)+': '+str(true_negative_rate)+'\n')
+		lst=[str(true_pos),str(true_neg),str(false_pos),str(false_neg),str(all_lab)]
+		sys.stdout.write('tp,tn,fp,fn,all_lab: '+' '.join(lst)+'\n')
 	sys.stdout.write('\n'+str(ap.size())+'\n')
 	sys.stdout.flush()
 

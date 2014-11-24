@@ -1,7 +1,12 @@
 import os,sys,codecs
 
 def is_punc(pos):
-	return pos=="#" or pos=="$" or pos=="''" or pos=="(" or pos=="" or pos=="[" or pos=="]" or pos=="{" or pos=="}" or pos=="\"" or pos=="," or pos=="." or pos==":" or pos=="``" or pos=="-LRB-" or pos=="-RRB-" or pos=="-LSB-" or pos=="-RSB-" or pos=="-LCB-" or pos=="-RCB-"
+	return pos=="#" or pos=="$" or pos=="''" or pos=="(" or \
+		pos=="" or pos=="[" or pos=="]" or pos=="{" or pos=="}" or \
+		pos=="\"" or pos=="," or pos=="." or pos==":" or \
+		pos=="``" or pos=="-LRB-" or pos=="-RRB-" or pos=="-LSB-" or \
+		pos=="-RSB-" or pos=="-LCB-" or pos=="-RCB-" or \
+		pos.startswith('$')
 
 
 all_deps=0

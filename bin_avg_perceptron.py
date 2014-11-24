@@ -9,13 +9,11 @@ class bin_avg_perceptron:
 		self.bias=bias
 		self.avg_bias=bias
 		if model_path!='':
-			self.avg_bias=pickle.load(open(model_path+'.bias','rb'))
+			self.avg_bias=float(pickle.load(open(model_path+'.bias','rb')))
 
 	def update_weight(self,feature,update):
 		self.weights[feature]+=update
 		self.avg_weights[feature]+=iteration*update
-		self.bias+=update
-		self.avg_bias+=iteration*update
 
 	def score(self,features,is_decode):
 		score=0
@@ -29,15 +27,20 @@ class bin_avg_perceptron:
 				score+=self.weights[feature]
 		return score
 
+	def label(self,features,is_decode,beta):
+		if self.score(features,is_decode)>beta:
+			return '1'
+		return '0'
+
 	def inc_iteration(self):
 		self.iteration+=1
 
 	def save_model(self,model_path):
 		avg=defaultdict(float)
 		for feature in self.weights.keys():
-			avg[feature]=self.weights[feature]-self.avg_weights[feature]/self.iteration
+			avg[feature]=float(self.weights[feature])-float(self.avg_weights[feature])/self.iteration
 		pickle.dump(avg,open(model_path,'wb'))
-		pickle.dump(self.avg_bias/self.iteration,open(model_path+'.bias','wb'))
+		pickle.dump(float(self.avg_bias)/self.iteration,open(model_path+'.bias','wb'))
 
 
 	def load_model(self,model_path):
@@ -85,6 +88,13 @@ if __name__=='__main__':
 
 				prediction='1' if ap.score(feats,False)>beta else '0'
 				if prediction!=label:
+					if prediction=='1':
+						ap.avg_bias+=ap.iteration*-1.0
+						ap.bias+=-1.0
+					else:
+						ap.bias+=1.0
+						ap.avg_bias+=ap.iteration*1.0
+
 					for feature in feats:
 						if prediction=='1':
 							ap.update_weight(feature,-1.0)
