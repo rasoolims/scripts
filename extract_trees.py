@@ -7,10 +7,49 @@ from collections import defaultdict
 def show_help():
 	print 'python extract_trees.py [min_len] [min_proportion] [input_data] [output_data] [is_labeled]'
 
-def is_projective(heads):
+
+def trav(rev_head,h,visited):
+	if rev_head.has_key(h):
+		for d in rev_head[h]:
+			if d in visited:
+				return True
+			visited.append(d)
+			trav(rev_head,d,visited)
+	return False
+
+def is_full(heads):
 	for dep1 in range(1,len(heads)+1):
 		head1=heads[dep1-1]
-		for dep2 in range(dep1+1,len(heads)+1):
+		if head1<0:
+			return False
+	return True
+
+def is_projective(heads):
+	rev_head=defaultdict(list)
+	for dep1 in range(1,len(heads)+1):
+		head1=heads[dep1-1]
+		if head1>=0:
+			rev_head[head1].append(dep1)
+
+	visited=list()
+	#print rev_head
+	if trav(rev_head,0,visited):
+		return False
+	if len(visited)<len(heads) and is_full(heads):
+		return False
+
+	rootN=0
+	for dep1 in range(1,len(heads)+1):
+		head1=heads[dep1-1]
+
+		if rev_head.has_key(dep1):
+			for d2 in rev_head[dep1]:
+				if (d2<head1 and head1<dep1) or (d2>head1 and head1>dep1) and head1>0:
+					return False
+
+		if head1==0:
+			rootN+=1
+		for dep2 in range(1,len(heads)+1):
 			head2=heads[dep2-1]
 			if head1==-1 or head2==-1:
 				continue
@@ -24,6 +63,8 @@ def is_projective(heads):
 					return False
 				if head1<head2 and head1>dep2 and dep1<dep2:
 					return False
+	if rootN!=1:
+		return False
 	return True
 
 def has_proportion(heads,min_proportion):

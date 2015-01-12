@@ -10,7 +10,9 @@ while line:
 	line=line.strip()
 	spl=line.split('\t')
 	if len(spl)>7:
-		spl[7]='_'
+		spl[7]='~'
+		if spl[6]=='0':
+			spl[7]='ROOT'
 		writer.write('\t'.join(spl)+'\n')
 	else:
 		writer.write(line+'\n')

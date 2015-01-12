@@ -1,12 +1,11 @@
 import os,sys,codecs
 
 def is_punc(pos):
-	return pos=="#" or pos=="$" or pos=="''" or pos=="(" or \
-		pos=="" or pos=="[" or pos=="]" or pos=="{" or pos=="}" or \
+	return pos=="#" or pos=="''" or pos=="(" or \
+		pos=="[" or pos=="]" or pos=="{" or pos=="}" or \
 		pos=="\"" or pos=="," or pos=="." or pos==":" or \
 		pos=="``" or pos=="-LRB-" or pos=="-RRB-" or pos=="-LSB-" or \
-		pos=="-RSB-" or pos=="-LCB-" or pos=="-RCB-" or \
-		pos.startswith('$')
+		pos=="-RSB-" or pos=="-LCB-" or pos=="-RCB-" or pos=='"' or pos==')'
 
 
 all_deps=0
@@ -28,7 +27,7 @@ while l1:
 
 	if len(s1)>6:
 		try:
-			if not is_punc(s1[3]):
+			if not is_punc(s2[3]):
 				all_deps+=1
 				if s1[6]==s2[6]:
 					correct_deps+=1
@@ -47,3 +46,4 @@ print acc
 acc=100*float(ncd)/nall_deps
 
 print acc
+print all_deps

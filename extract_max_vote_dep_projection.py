@@ -30,7 +30,7 @@ for i in range(1,len(sys.argv)-2):
 				projected_trees[sentence].append(words)
 				projected_trees[sentence].append(tags)
 
-			projected_trees[sentence].append(hds)
+			projected_trees[sentence].append([hds,labels])
 
 			if line_count%100000==0:
 				sys.stdout.write(str(line_count)+'...')
@@ -46,31 +46,37 @@ for sentence in projected_trees.keys():
 	tags=projected_trees[sentence][1]
 
 	max_vote_heads=list()
-
+	max_vote_labs=list()
 	for i in range(0,len(tags)):
 		head_votes=defaultdict(int)
 		for j in range(2,len(projected_trees[sentence])):
-			h=projected_trees[sentence][j][i]
+			h=projected_trees[sentence][j][0][i]
+			l=projected_trees[sentence][j][1][i]
 			if h!='-1':
-				head_votes[h]+=1
+				head_votes[str(h)+'#'+str(l)]+=1
 
 		max_vote=0
-		max_h=0
+		max_h='-1'
+		max_l='_'
 		for h in head_votes.keys():
 			if head_votes[h]>max_vote:
 				max_vote=head_votes[h]
-				max_h=h
+				max_h=h.split('#')[0]
+				max_l=h.split('#')[1]
+
 
 		all_possib+=1
 		if max_vote>=min_vote:
 			projected+=1
 			max_vote_heads.append(max_h)
+			max_vote_labs.append(max_l)
 		else:
 			max_vote_heads.append('-1')
+			max_vote_labs.append('_')
 
 	writer.write('\t'.join(words)+'\n')
 	writer.write('\t'.join(tags)+'\n')
-	writer.write('\t'.join(['_']*len(tags))+'\n')
+	writer.write('\t'.join(max_vote_labs)+'\n')
 	writer.write('\t'.join(max_vote_heads)+'\n\n')
 	line_count+=1
 	if line_count%100000==0:
