@@ -19,20 +19,24 @@ while line:
 	output=list()
 	all_c=True
 	for i in range(0,len(spl)):
-		tag1=spl[i][spl[i].rfind('_')+1:]
-		tag2=gspl[i][gspl[i].rfind('_')+1:]
+		if spl[i].rfind('_')>0 and gspl[i].rfind('_')>0:
+			tag1=spl[i][spl[i].rfind('_')+1:].strip()
+			tag2=gspl[i][gspl[i].rfind('_')+1:].strip()
 
-		if tag2==tag1:
-			corr+=1
-		else:
-			all_c=False
-		all_t+=1
+
+			if tag2==tag1:
+				corr+=1
+			else:
+				all_c=False
+
+			all_t+=1
 	if all_c:
 		corr_sen+=1
 	all_sen+=1
 	
 	line=predicted_reader.readline()
 
+print all_t,all_sen,corr,corr_sen
 acc=float(corr)*100.0/all_t
 exact=float(corr_sen)*100.0/all_sen
 

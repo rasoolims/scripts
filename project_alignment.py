@@ -1,15 +1,63 @@
 import os,sys,math,operator,codecs,traceback
 from collections import defaultdict
 
+
+def read_pos_map(path):
+	pos_map=defaultdict(str)
+	map_reader=open(path,'r')
+	line=map_reader.readline()
+	while line:
+		split_line=line.strip().split('\t')
+		if len(split_line)>1:
+			pos_map[split_line[0]]=split_line[1]
+		line=map_reader.readline()
+	return pos_map
+
+def same_pos_kind(p1,p2):
+	if p1==p2:
+		return True
+
+	if p1=='PRON':
+		if p2=='DET' or p2=='NOUN' or p2=='ADJ':
+			return True
+	if p1=='NOUN':
+		if p2=='DET' or p2=='PRON':
+			return True
+	if p1=='DET':
+		if p2=='NOUN' or p2=='PRON' or p2=='NUM':
+			return True;
+	if p1=='PRT':
+		if p2=='ADV':
+			return True
+	if p1=='ADV':
+		if p2=='PRT' or p2=='ADJ':
+			return True
+	if p1=='ADJ':
+		if p2=='ADV' or p2=='PRON':
+			return True
+	if p1=='X':
+		if p2=='NUM' or p2=='.':
+			return True
+	if p1=='.':
+		if p2=='X':
+			return True
+	if p1=='NUM':
+		if p2=='X' or p2=='DET':
+			return True
+
+	return False
+
+
 if len(sys.argv)<5:
-	print 'python project_alignment.py [src_mst_file] [dst_mst_file] [align_intersection_file] [output_file_name]'
+	print 'python project_alignment.py [src_mst_file] [dst_mst_file] [align_intersection_file] [src_pos_map] [dst_pos_map] [output_file_name]'
 	sys.exit(0)
 
 src_mst_reader=codecs.open(os.path.abspath(sys.argv[1]),'r')
 dst_mst_reader=codecs.open(os.path.abspath(sys.argv[2]),'r')
 align_reader=codecs.open(os.path.abspath(sys.argv[3]),'r')
-output_file_name=os.path.abspath(sys.argv[4])
-
+output_file_name=os.path.abspath(sys.argv[6])
+src_pos_map=read_pos_map(os.path.abspath(sys.argv[4]))
+dst_pos_map=read_pos_map(os.path.abspath(sys.argv[5]))
 prob_dict=defaultdict()
 
 src_alignment_dic=defaultdict()
@@ -99,6 +147,7 @@ sys.stdout.write('\n')
 # initializing different types of outputs
 src_dst_no_restriction_writer=codecs.open(output_file_name+'.src_dst_no_restriction','w')
 src_dst_pos_restriction_writer=codecs.open(output_file_name+'.src_dst_pos_restriction','w')
+src_dst_pos_restriction_writer2=codecs.open(output_file_name+'.src_dst_or_pos_restriction','w')
 
 # getting src projections
 sys.stdout.write('getting src projections...')
@@ -119,6 +168,8 @@ for s in src_alignment_dic.keys():
 
 	pos_restriction_heads=list()
 	pos_restriction_labels=list()
+	pos_restriction_heads2=list()
+	pos_restriction_labels2=list()
 	pos_restriction_projection=False
 
 	exception=False
@@ -129,6 +180,8 @@ for s in src_alignment_dic.keys():
 		no_restriction_confidence.append(1.0)
 		pos_restriction_heads.append('-1')
 		pos_restriction_labels.append("_")
+		pos_restriction_heads2.append('-1')
+		pos_restriction_labels2.append("_")
 
 	for mod in range(0,len(src_tree[0])):
 		src_head=src_tree[3][mod]
@@ -163,9 +216,27 @@ for s in src_alignment_dic.keys():
 				no_restriction_heads[dst_mod-1]=str(dst_head)#+':'+str(confidence)
 
 				# pos restriction
-				if src_pos==dst_mod_pos and src_head_pos==dst_head_pos:
+				sp=src_pos
+				if src_pos_map.has_key(src_pos):
+					sp=src_pos_map[src_pos]
+				dp=dst_mod_pos
+				if dst_pos_map.has_key(dst_mod_pos):
+					dp=dst_pos_map[dst_mod_pos]
+				shp=src_head_pos
+				if src_pos_map.has_key(src_head_pos):
+					shp=src_pos_map[src_head_pos]
+				dhp=dst_head_pos
+				if dst_pos_map.has_key(dst_head_pos):
+					dhp=dst_pos_map[dst_head_pos]
+
+				if sp==dp and shp==dhp:
 					pos_restriction_heads[dst_mod-1]=str(dst_head)
 					pos_restriction_labels[dst_mod-1]=src_label
+					pos_restriction_projection=True
+				
+				if (same_pos_kind(sp,dp) and  same_pos_kind(shp,dhp)) or dst_mod_word==src_word:
+					pos_restriction_heads2[dst_mod-1]=str(dst_head)
+					pos_restriction_labels2[dst_mod-1]=src_label
 					pos_restriction_projection=True
 			except:
 				print src_tree[1]
@@ -183,12 +254,37 @@ for s in src_alignment_dic.keys():
 		src_dst_no_restriction_writer.write('\t'.join(dst_tree[1])+'\n')
 		src_dst_no_restriction_writer.write('\t'.join(no_restriction_labels)+'\n')
 		src_dst_no_restriction_writer.write('\t'.join(no_restriction_heads)+'\n\n')
+
+		src_dst_pos_restriction_writer.write('\t'.join(dst_tree[0])+'\n')
+		src_dst_pos_restriction_writer.write('\t'.join(dst_tree[1])+'\n')
+		src_dst_pos_restriction_writer.write('\t'.join(pos_restriction_labels)+'\n')
+		src_dst_pos_restriction_writer.write('\t'.join(pos_restriction_heads)+'\n\n')
+
+		src_dst_pos_restriction_writer2.write('\t'.join(dst_tree[0])+'\n')
+		src_dst_pos_restriction_writer2.write('\t'.join(dst_tree[1])+'\n')
+		src_dst_pos_restriction_writer2.write('\t'.join(pos_restriction_labels2)+'\n')
+		src_dst_pos_restriction_writer2.write('\t'.join(pos_restriction_heads2)+'\n\n')
 	else:
 		src_dst_no_restriction_writer.write('\t'.join(dst_tree[0])+'\n')
 		src_dst_no_restriction_writer.write('\t'.join(dst_tree[1])+'\n')
 		src_dst_no_restriction_writer.write('\t'.join(['_']*len(dst_tree[0]))+'\n')
 		src_dst_no_restriction_writer.write('\t'.join(['-1']*len(dst_tree[0]))+'\n\n')
 
+		src_dst_pos_restriction_writer.write('\t'.join(dst_tree[0])+'\n')
+		src_dst_pos_restriction_writer.write('\t'.join(dst_tree[1])+'\n')
+		src_dst_pos_restriction_writer.write('\t'.join(['_']*len(dst_tree[0]))+'\n')
+		src_dst_pos_restriction_writer.write('\t'.join(['-1']*len(dst_tree[0]))+'\n\n')
+
+		src_dst_pos_restriction_writer2.write('\t'.join(dst_tree[0])+'\n')
+		src_dst_pos_restriction_writer2.write('\t'.join(dst_tree[1])+'\n')
+		src_dst_pos_restriction_writer2.write('\t'.join(['_']*len(dst_tree[0]))+'\n')
+		src_dst_pos_restriction_writer2.write('\t'.join(['-1']*len(dst_tree[0]))+'\n\n')
+
+
 src_dst_no_restriction_writer.flush()
 src_dst_no_restriction_writer.close()
+src_dst_pos_restriction_writer.flush()
+src_dst_pos_restriction_writer.close()
+src_dst_pos_restriction_writer2.flush()
+src_dst_pos_restriction_writer2.close()
 sys.stdout.write('\n')

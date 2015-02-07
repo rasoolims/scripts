@@ -21,9 +21,11 @@ punc_path=os.path.abspath(sys.argv[8])
 last_iter=int(sys.argv[9])
 full_cut_off=int(sys.argv[10])
 cut_off=int(sys.argv[11])
+initial_iter=int(sys.argv[12])
+
 
 beam=64
-nt=16
+nt=8
 
 '''
 	step 1: train on full trees
@@ -32,13 +34,13 @@ print colored('step 1: train on full trees','red')
 m_file=model_path+"_step1"
 # training
 if dev_path!='none':
-	os.system('nice java -Xmx20g -jar '+jar_path+' train --train-file '+ full_tree_path+' --dev-file '+dev_path+' --model-file '+m_file+' --punc_file '+punc_path+' beam:'+str(beam)+' nt:'+str(nt)+' iter:'+str(full_iter))
+	os.system('nice java -Xmx20g -jar '+jar_path+' train --train-file '+ full_tree_path+' --dev-file '+dev_path+' --model-file '+m_file+' --punc_file '+punc_path+' beam:'+str(beam)+' nt:'+str(nt)+' iter:'+str(initial_iter))
 	# parsing dev
-	os.system('nice java -Xmx20g -jar '+jar_path+' parse_conll --test-file '+dev_path+' --out '+m_file+'.out  --model-file '+m_file+'_iter'+str(full_iter) )
+	os.system('nice java -Xmx20g -jar '+jar_path+' parse_conll --test-file '+dev_path+' --out '+m_file+'.out  --model-file '+m_file+'_iter'+str(initial_iter) )
 	# evaluating on gold dev
 	os.system('nice java -Xmx20g -jar '+jar_path+' eval --parsed-file '+m_file+'.out --gold-file '+gold_dev_path +' --punc_file '+punc_path)
 else:
-	os.system('nice java -Xmx20g -jar '+jar_path+' train --train-file '+ full_tree_path+' --model-file '+m_file+' --punc_file '+punc_path+' beam:'+str(beam)+' nt:'+str(nt)+' iter:'+str(full_iter))
+	os.system('nice java -Xmx20g -jar '+jar_path+' train --train-file '+ full_tree_path+' --model-file '+m_file+' --punc_file '+punc_path+' beam:'+str(beam)+' nt:'+str(nt)+' iter:'+str(initial_iter))
 
 
 '''
@@ -47,7 +49,7 @@ else:
 print colored('step 2: parse the full trees','red')
 full_parsed1_path=m_file+'.full.parse1.conll'
 score_file=m_file+'.full.score'
-os.system('nice java -Xmx20g -jar '+jar_path+' parse_conll --test-file '+full_tree_path+' --out '+full_parsed1_path+'  --model-file '+m_file+'_iter'+str(full_iter)+' --score-file '+score_file)
+os.system('nice java -Xmx20g -jar '+jar_path+' parse_conll --test-file '+full_tree_path+' --out '+full_parsed1_path+'  --model-file '+m_file+'_iter'+str(initial_iter)+' --score-file '+score_file)
 
 '''
 	step 3: train on new full tress (with cut-off)

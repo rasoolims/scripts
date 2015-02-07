@@ -3,6 +3,7 @@ import os,sys,codecs
 sens=codecs.open(os.path.abspath(sys.argv[1]),'r').read().split('\n\n')
 tagged_sens=codecs.open(os.path.abspath(sys.argv[2]),'r').read().split('\n')
 writer=codecs.open(os.path.abspath(sys.argv[3]),'w')
+print len(sens),len(tagged_sens)
 
 cntr=0
 for sen in sens:
