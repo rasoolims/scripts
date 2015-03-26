@@ -1,8 +1,9 @@
 import os,sys,math,operator,codecs,traceback
 from collections import defaultdict
+from termcolor import colored
 
 if len(sys.argv)<5:
-	print 'python project_tagging.py [src_tag_file] [dst_tag_file] [align_intersection_file] [tag_mapping_file] [wiki_file(null if nothing)] [output_file_name] [hard assignment(optional)]'
+	print 'python project_tagging_w_log.py [src_tag_file] [dst_tag_file] [align_intersection_file] [tag_mapping_file] [wiki_file(null if nothing)] [output_file_name] [hard assignment(optional)]'
 	sys.exit(0)
 
 def read_pos_map(path):
@@ -54,7 +55,10 @@ prob_dict=defaultdict()
 src_alignment_dic=defaultdict()
 dst_alignment_dic=defaultdict()
 src_tags=defaultdict()
+src_words=defaultdict()
+src_words2=defaultdict()
 dst_words=defaultdict()
+trg_tags=defaultdict()
 
 
 # reading source tag files
@@ -68,6 +72,7 @@ while line:
 	if line:
 		line_count+=1
 		flds=line.split(' ')
+		tags=list()
 		words=list()
 		for f in flds:
 			x=f.strip().rfind('_')
@@ -75,8 +80,12 @@ while line:
 				tag=f.strip()[x+1:]
 				if pos_map.has_key(tag):
 					tag=pos_map[tag]
-				words.append(tag)
-		src_tags[line_count]=words
+				tags.append(tag)
+				words.append(f.strip()[:x])
+		src_tags[line_count]=tags
+		src_words[line_count]=line.strip()
+		src_words2[line_count]=words
+
 	line=src_tag_reader.readline()
 
 
@@ -94,12 +103,15 @@ while line:
 		line_count+=1
 		flds=line.split(' ')
 		words=list()
+		tags=list()
 		for f in flds:
 			x=f.strip().rfind('_')
 			if x>0:
 				word=f.strip()[:x]
 				words.append(word)
+				tags.append(f.strip()[x+1:])
 		dst_words[line_count]=words
+		trg_tags[line_count]=tags
 	line=dst_tag_reader.readline()
 
 sys.stdout.write('\n')
@@ -145,9 +157,11 @@ for s in src_alignment_dic.keys():
 	alignment=src_alignment_dic[s]
 
 	dst_tags=list()
+	dst_translate=list()
 
 	for m in range(0,len(dst_w)):
 		dst_tags.append('***')
+		dst_translate.append('***')
 
 	try:
 		for m in range(0,len(src_tag)):
@@ -155,6 +169,7 @@ for s in src_alignment_dic.keys():
 			if alignment.has_key(m+1):
 				w=dst_w[alignment[m+1]-1].lower()
 
+				dst_translate[alignment[m+1]-1]=src_words2[s][m]+'_'+t
 
 				if (wiki_map.has_key(w) and t in wiki_map[w]) or (not wiki_map.has_key(w) and not hard_assignment) or (not wiki_map.has_key(w) and (t=='NOUN' or t=='.')):
 					dst_tags[alignment[m+1]-1]=t
@@ -162,11 +177,19 @@ for s in src_alignment_dic.keys():
 
 		output=list()
 		for i in range(0,len(dst_w)):
-			output.append(dst_w[i]+'_'+dst_tags[i])
-		writer.write(' '.join(output)+'\n')
+			wstr=dst_w[i]+'_'+dst_tags[i]+'_'+trg_tags[s][i]+'('+dst_translate[i]+')'
+			if dst_tags[i]==trg_tags[s][i]:
+				output.append(colored(wstr,'green'))
+			elif  dst_tags[i]!=trg_tags[s][i] and dst_tags[i]!='***':
+				output.append(colored(wstr,'red'))
+			else:
+				output.append(dst_w[i]+'_'+dst_tags[i])
+		writer.write(src_words[s]+'\n')
+		writer.write(' '.join(output)+'\n\n')
 	except:
 		print alignment
 		print dst_tags
+		traceback.print_exc(file=sys.stdout)
 
 writer.flush()
 writer.close()

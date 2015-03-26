@@ -8,11 +8,9 @@ while line:
 
 	if line:
 		spl=line.split('\t')
-		spl[4]=spl[3]
-		spl[5]='_'
-		spl.append('_')
-
-		writer.write('\t'.join(spl)+'\n')
+		spl[3]=spl[4]
+		output=spl[0]+'\t'+spl[1]+'\t_\t'+spl[4]+'\t_\t_\t'+spl[9]+'\t'+spl[11]+'\t_\t_'
+		writer.write(output+'\n')
 	else:
 		writer.write('\n')
 
