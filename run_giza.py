@@ -94,7 +94,7 @@ os.system(giza_bin_dir+'mkcls -n10 -p'+dir_path+final_dst_file+' -V'+dst_vcb_fil
 print '(MSR_MESSAGE) run giza on source->target...'
 sys.stdout.flush()
 os.system(giza_bin_dir+'GIZA++ -S  '+src_vcb_file+ ' -T '+dst_vcb_file+' -C '\
-	+ snt_file+' -CoocurrenceFile '+cooc_file+' -o '+dir_path+trgt_lang_type+'_'+src_lang_type+'.align '+' > '+dir_path+'s_t_nohup.out')
+	+ snt_file+' -CoocurrenceFile '+cooc_file+' -o '+dir_path+ src_lang_type+'_'+trgt_lang_type+'.align '+' > '+dir_path+'s_t_nohup.out &')
 
 
 '''
@@ -113,7 +113,7 @@ os.system(giza_bin_dir+'snt2cooc.out '+src_vcb_file+' '+dst_vcb_file+' '+snt_fil
 print '(MSR_MESSAGE) run giza...'
 sys.stdout.flush()
 os.system(giza_bin_dir+'GIZA++ -S  '+dst_vcb_file+ ' -T '+src_vcb_file+' -C '\
-	+ snt_file+' -CoocurrenceFile '+cooc_file +' -o '+dir_path+src_lang_type+'_'+trgt_lang_type+'.align '+' > '+dir_path+'t_s_nohup.out')
+	+ snt_file+' -CoocurrenceFile '+cooc_file +' -o '+dir_path+trgt_lang_type+'_'+ src_lang_type+'.align '+' > '+dir_path+'t_s_nohup.out ')
 
 print '(MSR_MESSAGE) done!'
 

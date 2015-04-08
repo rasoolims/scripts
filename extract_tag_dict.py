@@ -24,7 +24,7 @@ while line:
 		t=s[i+1:]
 
 		if not tag_dict.has_key(w):
-			tag_dict[w]=defaultdict()
+			tag_dict[w]=defaultdict(int)
 
 		tag_dict[w][t]+=1
 

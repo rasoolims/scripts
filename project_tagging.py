@@ -41,6 +41,7 @@ wiki_map=dict()
 if sys.argv[5]!='null':
 	wiki_map=read_wiktionary_map(os.path.abspath(sys.argv[5]))
 
+print len(wiki_map)
 output_file_name=os.path.abspath(sys.argv[6])
 
 hard_assignment=False
@@ -156,7 +157,7 @@ for s in src_alignment_dic.keys():
 				w=dst_w[alignment[m+1]-1].lower()
 
 
-				if (wiki_map.has_key(w) and t in wiki_map[w]) or (not wiki_map.has_key(w) and not hard_assignment) or (not wiki_map.has_key(w) and (t=='NOUN' or t=='.')):
+				if (wiki_map.has_key(w) and t in wiki_map[w]) or (not wiki_map.has_key(w) and not hard_assignment) or (not wiki_map.has_key(w) and not (t=='ADV' or t=='ADJ' or t=='NOUN' or t=='.')):
 					dst_tags[alignment[m+1]-1]=t
 
 
