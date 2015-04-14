@@ -2,7 +2,7 @@ import os,sys,math,operator,codecs,traceback
 from collections import defaultdict
 
 if len(sys.argv)<5:
-	print 'python project_tagging.py [src_tag_file] [dst_tag_file] [align_intersection_file] [tag_mapping_file] [wiki_file(null if nothing)] [output_file_name] [hard assignment(optional)]'
+	print 'python project_tagging_w_cluster_limit.py [src_tag_file] [dst_tag_file] [align_intersection_file] [tag_mapping_file] [wiki_file(null if nothing)] [src_cluster_file] [trg_cluster_file] [output_file_name] [hard assignment(optional)]'
 	sys.exit(0)
 
 def read_pos_map(path):
@@ -32,6 +32,21 @@ def read_wiktionary_map(path):
 		line=map_reader.readline()
 	return pos_map
 
+def read_cluster_map(path):
+	pos_map=defaultdict(str)
+	map_reader=open(path,'r')
+	line=map_reader.readline()
+	while line:
+		split_line=line.strip().split()
+		if len(split_line)>2:
+			word=split_line[1].lower()
+			tag=split_line[0]
+			cluster=tag[:min(len(tag),4)]
+
+			pos_map[word]=cluster
+		line=map_reader.readline()
+	return pos_map
+
 src_tag_reader=codecs.open(os.path.abspath(sys.argv[1]),'r')
 dst_tag_reader=codecs.open(os.path.abspath(sys.argv[2]),'r')
 align_reader=codecs.open(os.path.abspath(sys.argv[3]),'r')
@@ -41,11 +56,17 @@ wiki_map=dict()
 if sys.argv[5]!='null':
 	wiki_map=read_wiktionary_map(os.path.abspath(sys.argv[5]))
 
+
+src_cluster_map=read_cluster_map(os.path.abspath(sys.argv[6]))
+trgt_cluster_map=read_cluster_map(os.path.abspath(sys.argv[7]))
+
+print len(src_cluster_map),len(trgt_cluster_map)
+
 print len(wiki_map)
-output_file_name=os.path.abspath(sys.argv[6])
+output_file_name=os.path.abspath(sys.argv[8])
 
 hard_assignment=False
-if len(sys.argv)>7 and sys.argv[7]=='hard':
+if len(sys.argv)>9 and sys.argv[9]=='hard':
 	hard_assignment=True
 	print 'hard assignment'
  
@@ -55,6 +76,7 @@ prob_dict=defaultdict()
 src_alignment_dic=defaultdict()
 dst_alignment_dic=defaultdict()
 src_tags=defaultdict()
+src_words=defaultdict()
 dst_words=defaultdict()
 
 
@@ -69,6 +91,7 @@ while line:
 	if line:
 		line_count+=1
 		flds=line.split(' ')
+		tags=list()
 		words=list()
 		for f in flds:
 			x=f.strip().rfind('_')
@@ -76,8 +99,10 @@ while line:
 				tag=f.strip()[x+1:]
 				if pos_map.has_key(tag):
 					tag=pos_map[tag]
-				words.append(tag)
-		src_tags[line_count]=words
+				tags.append(tag)
+				words.append(f.strip()[:x].lower())
+		src_tags[line_count]=tags
+		src_words[line_count]=words
 	line=src_tag_reader.readline()
 
 
@@ -137,6 +162,12 @@ writer=codecs.open(output_file_name,'w')
 sys.stdout.write('getting projections...')
 sys.stdout.flush()
 
+###########################################################################
+
+joint_cluster_count=defaultdict()
+src_cluster_count=defaultdict(int)
+trgt_cluster_count=defaultdict(int)
+
 for s in src_alignment_dic.keys():
 	if s%10000==0:
 		sys.stdout.write(str(s)+'...')
@@ -153,12 +184,66 @@ for s in src_alignment_dic.keys():
 	try:
 		for m in range(0,len(src_tag)):
 			t=src_tag[m]
+			sw=src_words[s][m]
 			if alignment.has_key(m+1):
 				w=dst_w[alignment[m+1]-1].lower()
 
-				if (wiki_map.has_key(w) and t in wiki_map[w]) or (not wiki_map.has_key(w) and not hard_assignment) or (not wiki_map.has_key(w)): # and not (t=='PRT'  or t=='ADV' or t=='ADJ' or t=='NOUN' or t=='.')
-					#if t!='PRT':
-					dst_tags[alignment[m+1]-1]=t
+				if src_cluster_map.has_key(sw) and trgt_cluster_map.has_key(w):
+					src_cluster=src_cluster_map[sw]
+					dst_cluster=trgt_cluster_map[w]
+
+					if not joint_cluster_count.has_key(src_cluster):
+						joint_cluster_count[src_cluster]=defaultdict(int)
+					joint_cluster_count[src_cluster][dst_cluster]+=1
+					src_cluster_count[src_cluster]+=1
+					trgt_cluster_count[dst_cluster]+=1
+	except:
+		print alignment
+		print dst_tags
+
+
+###########################################################################
+
+top_3_counts=defaultdict(set)
+
+for src_cluster in joint_cluster_count.keys():
+	sorted_x= sorted(joint_cluster_count[src_cluster].items(), key=operator.itemgetter(1), reverse=True)
+	for i in range(0, min(10, len(sorted_x))):
+		top_3_counts[src_cluster].add(sorted_x[i][0])
+
+###########################################################################
+
+for s in src_alignment_dic.keys():
+	if s%10000==0:
+		sys.stdout.write(str(s)+'...')
+		sys.stdout.flush()
+	src_tag=src_tags[s]
+	dst_w=dst_words[s]
+	alignment=src_alignment_dic[s]
+
+	dst_tags=list()
+
+	for m in range(0,len(dst_w)):
+		dst_tags.append('***')
+
+	try:
+		for m in range(0,len(src_tag)):
+			t=src_tag[m]
+			sw=src_words[s][m]
+			if alignment.has_key(m+1):
+				w=dst_w[alignment[m+1]-1].lower()
+
+				has_cluster_condition=True
+				if src_cluster_map.has_key(sw) and trgt_cluster_map.has_key(w):
+					src_cluster=src_cluster_map[sw]
+					dst_cluster=trgt_cluster_map[w]
+
+					if not dst_cluster in top_3_counts[src_cluster]:
+						has_cluster_condition=False
+
+				if (wiki_map.has_key(w) and t in wiki_map[w]) or (not wiki_map.has_key(w) and not hard_assignment) or (not wiki_map.has_key(w) and not (t=='ADV' or t=='ADJ' or t=='NOUN' or t=='.')):
+					if has_cluster_condition:
+						dst_tags[alignment[m+1]-1]=t
 
 		output=list()
 		for i in range(0,len(dst_w)):
