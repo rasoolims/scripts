@@ -17,12 +17,14 @@ writer=codecs.open(os.path.abspath(sys.argv[3]),'w')
 line=reader.readline()
 while line:
 	line=line.strip()
-	spl=line.split('\t')
+	spl=line.split()
 	if len(spl)<6:
 		writer.write('\n')
 	else:
 		if mapping_dict.has_key(spl[3]):
 			spl[3]=mapping_dict[spl[3]]
+		elif  mapping_dict.has_key(spl[4]):
+			spl[3]=mapping_dict[spl[4]]
 		#elif mapping_dict.has_key(spl[3][0:2]):
 			#spl[3]=mapping_dict[spl[3][0:2]]
 		#elif mapping_dict.has_key(spl[3][0:2]):

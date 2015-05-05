@@ -76,6 +76,10 @@ while line:
 				tag=f.strip()[x+1:]
 				if pos_map.has_key(tag):
 					tag=pos_map[tag]
+				#elif pos_map.has_key(tag[:tag.find('-')]):
+					#tag=pos_map[tag[:tag.find('-')]]
+				else:
+					print tag,' does not exist'
 				words.append(tag)
 		src_tags[line_count]=words
 	line=src_tag_reader.readline()
@@ -161,7 +165,11 @@ for s in src_alignment_dic.keys():
 					dst_tags[alignment[m+1]-1]=t
 
 		output=list()
+
+		is_full=True
 		for i in range(0,len(dst_w)):
+			if dst_tags[i]=='***':
+				is_full=False
 			output.append(dst_w[i]+'_'+dst_tags[i])
 		writer.write(' '.join(output)+'\n')
 	except:

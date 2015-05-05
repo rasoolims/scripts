@@ -110,7 +110,7 @@ print '(MSR_MESSAGE) running snt2cooc (target->source)...'
 sys.stdout.flush()
 os.system(giza_bin_dir+'snt2cooc.out '+src_vcb_file+' '+dst_vcb_file+' '+snt_file +' > '+cooc_file)
 
-print '(MSR_MESSAGE) run giza...'
+print '(MSR_MESSAGE) run giza target->source...'
 sys.stdout.flush()
 os.system(giza_bin_dir+'GIZA++ -S  '+dst_vcb_file+ ' -T '+src_vcb_file+' -C '\
 	+ snt_file+' -CoocurrenceFile '+cooc_file +' -o '+dir_path+trgt_lang_type+'_'+ src_lang_type+'.align '+' > '+dir_path+'t_s_nohup.out ')
