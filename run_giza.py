@@ -55,7 +55,11 @@ else:
 
 print '(MSR_MESSAGE) cleaning files...'
 sys.stdout.flush()
-clean_corpus(cleaner_script_path, dir_path+'corpus.tok',src_lang_type,trgt_lang_type,min_len,max_len)
+if sys.argv[3]!='null':
+	clean_corpus(cleaner_script_path, dir_path+'corpus.tok',src_lang_type,trgt_lang_type,min_len,max_len)
+else:
+	os.system('cp '+dir_path+'corpus.tok.'+src_lang_type+' ' +dir_path+'corpus.tok.clean.'+src_lang_type)
+	os.system('cp '+dir_path+'corpus.tok.'+trgt_lang_type+' ' +dir_path+'corpus.tok.clean.'+trgt_lang_type)
 
 
 print '(MSR_MESSAGE) lowercasing files...'

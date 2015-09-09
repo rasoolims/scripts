@@ -109,7 +109,13 @@ while line:
 		hds=dst_mst_reader.readline().strip().split('\t')
 		heads=list()
 		for h in hds:
-			heads.append(int(round(float(h))))
+			try:
+				heads.append(int(round(float(h))))
+			except:
+				#print h
+				print hds
+				#print labels
+				#sys.exit(0)
 
 		dst_trees[line_count]=words,tags,labels,heads
 		if line_count%100000==0:

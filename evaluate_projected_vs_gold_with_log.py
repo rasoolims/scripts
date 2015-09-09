@@ -213,7 +213,7 @@ for sentence_list in projected_trees.keys():
 				if src_pos_map.has_key(sh_t):
 					sh_t=src_pos_map[sh_t]
 
-				if not same_pos_kind(t_h,sh_t) and sh_t!='_' and t_h!='_' and sm!=words[i]:
+				if not same_pos_kind(t_h,sh_t) and sh_t!='_' and t_h!='_' and s_m!=words[i]:
 					head_pos_violated='head_pos_mismatch'
 				if not same_pos_kind(t_m,sm_t) and sm_t!='_' and t_m!='_':
 					dep_pos_violated='dep_pos_mismatch'

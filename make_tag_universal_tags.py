@@ -17,16 +17,19 @@ reader=codecs.open(os.path.abspath(sys.argv[2]),'r')
 writer=codecs.open(os.path.abspath(sys.argv[3]),'w')
 line=reader.readline()
 while line:
-	spl=line.strip().split(' ')
+	if line.strip():
 
-	output=list()
-	for s in spl:
-		x=s.rfind('_')
-		word=s[:x]
-		tag=s[x+1:]
 
-		tag=mapping_dict[tag]
-		output.append(word+'_'+tag)
+		spl=line.replace('  ',' ').replace('  ',' ').strip().split(' ')
+
+		output=list()
+		for s in spl:
+			x=s.rfind('_')
+			word=s[:x]
+			tag=s[x+1:]
+
+			tag=mapping_dict[tag]
+			output.append(word+'_'+tag)
 
 	writer.write(' '.join(output)+'\n')
 

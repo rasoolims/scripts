@@ -13,7 +13,7 @@ while line:
 			i+=1
 			word=s[:s.rfind('_')]
 			tag=s[s.rfind('_')+1:]
-			output=str(i)+'\t'+word+'\t_\t'+tag+'\t_\t_\t0\t_\n'
+			output=str(i)+'\t'+word+'\t_\t'+tag+'\t_\t_\t-1\t_\n'
 			writer.write(output)
 	if i>0:
 		writer.write('\n')

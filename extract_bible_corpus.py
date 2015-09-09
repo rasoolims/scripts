@@ -12,6 +12,8 @@ writer2=codecs.open(os.path.abspath(sys.argv[4])+'.'+l2,'w')
 
 
 for d in os.listdir(dir1):
+	#print dir1
+	#print d
 	dir2=dir1+'/'+d
 	fs= listdir(dir2)
 

@@ -20,7 +20,11 @@ for sen in sens:
 			if ' ' in l.strip().split('\t')[1].strip():
 				print l.strip().split('\t')[1].strip()
 				print l
-			words.append(l.strip().split('\t')[1].strip()+delim+(l.strip().split('\t')[fp].replace('_','-')))
+				ws=l.strip().split('\t')[1].strip().split(' ')
+				for w in ws:
+					words.append(w+delim+(l.strip().split('\t')[fp].replace('_','-')))
+			else:
+				words.append(l.strip().split('\t')[1].strip()+delim+(l.strip().split('\t')[fp].replace('_','-')))
 	writer.write(' '.join(words)+'\n')
 
 writer.flush()

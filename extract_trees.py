@@ -73,7 +73,11 @@ def has_proportion(heads,min_proportion):
 		if heads[dep1-1]>=0:
 			num+=1
 
-	prop=1.0/(len(heads)-1)
+	prop=0
+	try:
+		prop=1.0/(len(heads))
+	except:
+		prop=0
 	if is_projective(heads) and min_proportion<=prop:
 		return True
 	return False

@@ -16,19 +16,16 @@ for line in f:
             #print sent
         wrds += sent[1] + "\t";
         pos += sent[3] + "\t";
-        labs += sent[7] + "\t";
         par += sent[6] + "\t";
     else:
         if wrds.strip():
             print wrds; wrds = "";
             print pos; pos = "";
-            print labs; labs = "";
             print par; par = "";
             print "";
         else:
             wrds = "";
             pos = "";
-            labs = "";
             par = "";
 
 f.close();
