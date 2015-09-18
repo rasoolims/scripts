@@ -1,6 +1,67 @@
 #! /usr/bin/python
 
-import codecs, os, sys
+import codecs, os, pickle, sys
+from collections import defaultdict
+
+class SpanInfo:
+	def __init__(self, is_left_head, head_word, prev_pos, next_pos, head_of_head_pos, head_dependency, words, tags, heads, labels):
+		self.is_left_head = is_left_head
+		self.head_word = head_word
+		self.prev_pos = prev_pos
+		self.next_pos = next_pos
+		self.head_of_head_pos = head_of_head_pos
+		self.head_dependency = head_dependency
+		self.words = words
+		self.tags = tags
+		self.heads = [int(x) for x in heads]
+		self.labels = labels
+
+	@staticmethod
+	def get_span_from_str(str_info):
+		spl = str_info.strip().split('\n')
+		is_left_head = bool(spl[0])
+		head_word = spl[1]
+		prev_pos = spl[2]
+		next_pos = spl[3]
+		head_of_head_pos = spl[4]
+		head_dependency = spl[5]
+		words = spl[6].split(' ')
+		tags = spl[7].split(' ')
+		heads = [int(x) for x in spl[8].split(' ')]
+		labels = spl[9].split(' ')
+		return SpanInfo(is_left_head,head_word, prev_pos, next_pos, head_of_head_pos, head_dependency, words, tags, heads, labels)
+
+class SpanDicts:
+	def __init__(self):
+		self.span_info_dic = defaultdict(SpanInfo)
+		self.head_word_info = defaultdict(list)
+		self.prev_pos_info = defaultdict(list)
+		self.next_pos_info = defaultdict(list)
+		self.context_pos_info = defaultdict(list)
+		self.context_dep_pos_info = defaultdict(list)
+		self.context_dep_head_pos_info = defaultdict(list)
+		self.head_word_dep_info = defaultdict(list)
+		self.head_of_head_pos_info = defaultdict(list)
+
+	def add_span_info(self, span, span_id):
+		self.span_info_dic[span_id] = span
+		self.head_word_info[span.head_word].append(span_id)
+		self.prev_pos_info[span.prev_pos].append(span_id)
+		self.next_pos_info[span.next_pos].append(span_id)
+		self.context_pos_info[span.prev_pos +' ' + span.next_pos].append(span_id)
+		self.head_word_dep_info[span.head_word +' ' + span.head_dependency].append(span_id)
+		self.context_dep_pos_info[span.prev_pos +' ' + span.next_pos + ' ' + span.head_dependency].append(span_id)
+		self.head_of_head_pos_info[span.head_of_head_pos].append(span_id)
+		self.context_dep_head_pos_info[span.prev_pos +' ' + span.next_pos + ' ' + span.head_dependency + ' '+ span.head_of_head_pos].append(span_id)
+
+
+	@staticmethod
+	def save_to_file(span_dict, output_path):
+		pickle.dump(span_dict, open(output_path,'wb'))
+
+	@staticmethod
+	def load_from_file(input_file):
+		return pickle.load(open(input_file,'rb'))
 
 def get_spans_(words, tags, heads, deps, min_span):
 	'''
@@ -52,6 +113,8 @@ def get_spans_(words, tags, heads, deps, min_span):
 		num_of_outward_heads = 0
 		head_of_head_pos = 'ROOT'
 		head_word = '_'
+		head_dependency = 'ROOT'
+		is_left_head = False
 
 		# shifting heads
 		for j in range(0,len(cur_heads)):
@@ -59,23 +122,26 @@ def get_spans_(words, tags, heads, deps, min_span):
 			if  shift <= 0 or shift>span_size:
 				num_of_outward_heads+=1
 				if shift != 0:
-					head_of_head_pos = deps[start_ranges[i]+j]
+					head_of_head_pos = tags[start_ranges[i]+j]
 				head_word = words[start_ranges[i]+j]
+				head_dependency = deps[start_ranges[i]+j]
 			if shift<=0:
 				cur_heads[j] = '-1'
+				is_left_head = True
 			elif shift>span_size:
-				cur_heads[j] = str(span_size + 1)
+				cur_heads[j] = '-1'
 			else:
 				cur_heads[j] = str(shift)
 
 		if num_of_outward_heads == 1:
-			
 			next_pos = '_' if end_ranges[i] == len(heads) -1 else tags[end_ranges[i]+1]
 			prev_pos = '_' if start_ranges[i] ==  0 else tags[start_ranges[i]-1]
+			output_list.append(str(is_left_head))
+			output_list.append(head_word)
 			output_list.append(prev_pos)
 			output_list.append(next_pos)
 			output_list.append(head_of_head_pos)
-			output_list.append(head_word)
+			output_list.append(head_dependency)
 			output_list.append(' '.join(cur_words))
 			output_list.append(' '.join(cur_tags))
 			output_list.append(' '.join(cur_heads))
@@ -88,7 +154,7 @@ def get_spans_(words, tags, heads, deps, min_span):
 
 def extract_possible_spans(file_path, output_path, span_min_length):
 	reader = codecs.open(file_path,'r',encoding='utf-8')
-	writer = codecs.open(output_path, 'w',encoding= 'utf-8')
+	span_dic = SpanDicts()
 
 	cnt = 1
 	line = 'xxx'
@@ -98,22 +164,24 @@ def extract_possible_spans(file_path, output_path, span_min_length):
 		labels = reader.readline().strip().split()
 		heads = map(int,reader.readline().strip().split())
 		
-		writer.write(get_spans_(words,tags,heads,labels, span_min_length))
-		cnt+=1
-		if cnt%1000==0:
-			sys.stdout.write('%s\r' % (str(cnt)+'...'))
+		spans = get_spans_(words,tags,heads,labels, span_min_length).split('\n\n')
+		for span in spans:
+			if not span.strip():
+				continue
+			span_dic.add_span_info(SpanInfo.get_span_from_str(span), cnt)
+			cnt+=1
+			if cnt%1000==0:
+				sys.stdout.write('%s\r' % (str(cnt)+'...'))
 
 		line = reader.readline()
 	sys.stdout.write('%s\r' % (str(cnt)+'...\n'))
 
+	sys.stdout.write('%s\r' % 'dumping span info into a file ...\n')
+	SpanDicts.save_to_file(span_dic,output_path)
 
-def test_main():
-	words = ['I', 'want','to','say','something','that','I','think','is','useful','.']
-	tags = ['PRON', 'VERB','ADP','VERB','NOUN','CONJ','PRON','VERB','VERB','ADJ','.']
-	heads = [2,0,-1,2,4,5,8,6,8,-1,8]
-	labels = ['SUBJ', 'ROOT','ADP','VERB','NOUN','CONJ','PRON','VERB','VERB','ADJ','.']
-	print get_spans_(words,tags,heads,labels, 3)
 
 if __name__ == '__main__':
+	if len(sys.argv)<4:
+		print 'args: [input mst path] [output span file] [min span length]'
+		sys.exit(0)
 	extract_possible_spans(os.path.abspath(sys.argv[1]),os.path.abspath(sys.argv[2]), int(sys.argv[3]))
-	#test_main()
