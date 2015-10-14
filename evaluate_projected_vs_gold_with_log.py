@@ -123,7 +123,7 @@ while line:
 		tags=reader.readline()
 		tags2=reader2.readline().strip().split('\t')
 		labels=reader.readline()
-		labels2=reader2.readline()
+		labels2=reader2.readline().split('\t')
 		hds=reader.readline().strip().split('\t')
 		hds2=reader2.readline().strip().split('\t')
 		sentence=' '.join(words)
@@ -167,6 +167,7 @@ for sentence_list in projected_trees.keys():
 			gw=gold_trees[sentence_list][1]
 			gp=gold_trees[sentence_list][2]
 			gsh=gold_trees[sentence_list][3]
+			gl=gold_trees[sentence_list][4]
 			alignment=gold_trees[sentence_list][5]
 			ph=sentence[0]
 			tags=sentence[1]
@@ -175,6 +176,7 @@ for sentence_list in projected_trees.keys():
 			print ' '.join(gw)
 			print ' '.join(gp)
 			print ' '.join(gsh)
+			print ' '.join(gl)
 			for i in range(0,len(words)):
 				out=''
 				s_h='_'

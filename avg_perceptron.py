@@ -83,7 +83,7 @@ if __name__=='__main__':
 			
 			if len(flds)>1:
 				cnt+=1
-				if cnt%100000==0:
+				if cnt%1000==0:
 					sys.stdout.write(str(cnt)+'('+str(ap.size())+')'+'...')
 					sys.stdout.flush()
 				label=flds[-1]
@@ -133,7 +133,7 @@ if __name__=='__main__':
 				
 			if len(flds)>1:
 				cnt+=1
-				if cnt%100000==0:
+				if cnt%1000==0:
 					sys.stdout.write(str(cnt)+'...')
 					sys.stdout.flush()
 				label=flds[-1]
@@ -167,6 +167,8 @@ if __name__=='__main__':
 		sys.stdout.write('bias/avg_bias(1) '+str(ap.weights['label:1'])+' / '+str(dap.avg_weights['label:1'])+'\n')
 		sys.stdout.write('bias/avg_bias(0) '+str(ap.weights['label:0'])+' / '+str(dap.avg_weights['label:0'])+'\n')
 		accuracy=100.0*float(true_pos+true_neg)/all_lab
+		if all_pos==0:
+			all_pos = 1
 		recall=100.0*float(true_pos)/all_pos
 		precision=0.0
 		true_negative_rate=0.0

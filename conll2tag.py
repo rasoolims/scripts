@@ -1,12 +1,12 @@
 import os,sys,codecs
 
-sens=codecs.open(os.path.abspath(sys.argv[1]),'r').read().split('\n\n')
-writer=codecs.open(os.path.abspath(sys.argv[2]),'w')
+sens=codecs.open(os.path.abspath(sys.argv[1]),'r', encoding='utf-8').read().split('\n\n')
+writer=codecs.open(os.path.abspath(sys.argv[2]),'w', encoding='utf-8')
 delim='_'
 
 fp=3
 if len(sys.argv)>3:
-	if sys.argv[3]=='fp':
+	if sys.argv[3]==u'fp':
 		fp=4
 	else:
 		delim=sys.argv[3]
