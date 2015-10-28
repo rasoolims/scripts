@@ -18,9 +18,15 @@ while line1:
 	spl=line1.strip().split('\t')
 	if len(spl)>2:
 		if spl[1].lower() in word_dict:
-			spl[1] = spl[1].lower()
+			tmp = spl[3]
+			spl[3] = spl[1].lower()
+			spl[1] = tmp
+		elif spl[3]=='.':
+			tmp = spl[3]
+			spl[3]=spl[1]
+			spl[1] = tmp
 		else:
-			spl[1]='_'
+			spl[1] = spl[3]
 		spl[2]='_'
 		writer1.write('\t'.join(spl)+'\n')
 	else:

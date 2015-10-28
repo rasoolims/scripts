@@ -22,17 +22,18 @@ class Reorderer:
 		distance = tree.index[1] - 1
 		for i in range(2, len(tree.words)+1):
 			distance += abs(tree.index[i] - tree.index[i-1]) - 1
+			distance+= abs(i-1 - tree.reverse_index[i-1])
 		distance += abs(len(tree.words)+1 - tree.index[len(tree.words)]) - 1
 
-		words = ['<s>','<s>']+tree.tags +['</s>']
+		words = ['<s>','<s>','<s>','<s>']+tree.tags +['</s>']
 
 		l1 = self.dst_lm.score_arr(words)
 		l2 = self.src_lm.score_arr(words)
 
 		sc = (self.a1*l1+self.a2*l2-self.a3*distance)
-		print ' '.join(tree.tags)
-		print sc
-		print ''
+		#print ' '.join(tree.tags)
+		#print sc
+		#print ''
 		return sc 
 
 	@staticmethod
@@ -84,7 +85,7 @@ class Reorderer:
 			else:
 				continue
 
-			print 'head-->',n
+			#print 'head-->',n
 
 			new_beam = dict()
 

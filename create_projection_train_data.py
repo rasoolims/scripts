@@ -248,7 +248,7 @@ for sentence_list in projected_trees.keys():
 							writer.write('\t'.join(features)+'\tflip_head_child_and_all_children'+'\n')
 						else:
 							writer.write('\t'.join(features)+'\tflip_head_child'+'\n')
-					elif gold_label==label:
+					elif gold_label!=label:
 						if flip_children:
 							writer.write('\t'.join(features)+'\tflip_head_child_and_all_children'+'_change_label:'+gold_label+'\n')
 						else:
@@ -264,4 +264,3 @@ sys.stdout.write(str(cnt)+'\n')
 writer.close()
 
 print 'done!'
-
