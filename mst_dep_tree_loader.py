@@ -20,6 +20,67 @@ class DependencyTree:
 		for i in range(0,len(heads)):
 			self.reverse_tree[heads[i]].add(i+1)
 
+	@staticmethod
+	def trav(rev_head,h,visited):
+		if rev_head.has_key(h):
+			for d in rev_head[h]:
+				if d in visited:
+					return True
+				visited.append(d)
+				DependencyTree.trav(rev_head,d,visited)
+		return False
+
+	@staticmethod
+	def is_full(heads):
+		for dep1 in range(1,len(heads)+1):
+			head1=heads[dep1-1]
+			if head1<0:
+				return False
+		return True
+
+	@staticmethod
+	def is_projective(heads):
+		rev_head=defaultdict(list)
+		for dep1 in range(1,len(heads)+1):
+			head1=heads[dep1-1]
+			if head1>=0:
+				rev_head[head1].append(dep1)
+
+		visited=list()
+		#print rev_head
+		if DependencyTree.trav(rev_head,0,visited):
+			return False
+		if len(visited)<len(heads) and DependencyTree.is_full(heads):
+			return False
+
+		rootN=0
+		for dep1 in range(1,len(heads)+1):
+			head1=heads[dep1-1]
+
+			if rev_head.has_key(dep1):
+				for d2 in rev_head[dep1]:
+					if (d2<head1 and head1<dep1) or (d2>head1 and head1>dep1) and head1>0:
+						return False
+
+			if head1==0:
+				rootN+=1
+			for dep2 in range(1,len(heads)+1):
+				head2=heads[dep2-1]
+				if head1==-1 or head2==-1:
+					continue
+				if dep1>head1 and head1!=head2:
+					if dep1>head2 and dep1<dep2 and head1<head2:
+						return False
+					if dep1<head2 and dep1>dep2 and head1<dep2:
+						return False
+				if dep1<head1 and head1!=head2:
+					if head1>head2 and head1<dep2 and dep1<head2:
+						return False
+					if head1<head2 and head1>dep2 and dep1<dep2:
+						return False
+		if rootN!=1:
+			return False
+		return True
 
 	@staticmethod
 	def load_tree_from_string(tree_str):
@@ -31,10 +92,34 @@ class DependencyTree:
 		return DependencyTree(words, tags, heads, labels)
 
 	@staticmethod
+	def load_tree_from_conll_string(tree_str):
+		lines = tree_str.strip().split('\n')
+		words = list()
+		tags = list()
+		heads = list()
+		labels = list()
+
+		for line in lines:
+			spl = line.split('\t')
+			words.append(spl[1])
+			tags.append(spl[3])
+			heads.append(int(spl[6]))
+			labels.append(spl[7])
+
+		return DependencyTree(words, tags, heads, labels)
+
+	@staticmethod
 	def load_trees_from_file(file_str):
 		tree_list = list()
 		[tree_list.append(DependencyTree.load_tree_from_string(tree_str)) for tree_str in codecs.open(file_str,'r').read().strip().split('\n\n')]
 		return tree_list
+
+	@staticmethod
+	def load_trees_from_conll_file(file_str):
+		tree_list = list()
+		[tree_list.append(DependencyTree.load_tree_from_conll_string(tree_str)) for tree_str in codecs.open(file_str,'r').read().strip().split('\n\n')]
+		return tree_list
+
 
 	def get_span_list(self, head, span_set):
 		span_set.add(head)
@@ -141,6 +226,14 @@ class DependencyTree:
 		lst.append('\t'.join(self.tags))
 		lst.append('\t'.join(self.labels))
 		lst.append('\t'.join(str(x) for x in self.heads))
+		return '\n'.join(lst)
+
+	def conll_str(self):
+		lst = list()
+
+		for i in range(0,len(self.words)):
+			ln = str(i+1)+'\t'+self.words[i]+'\t'+self.words[i]+'\t'+self.tags[i]+'\t'+self.tags[i]+'\t_\t'+str(self.heads[i])+'\t'+self.labels[i]+'\t_\t_'
+			lst.append(ln)
 		return '\n'.join(lst)
 
 	def expand_tree(self, span_info, word_index):

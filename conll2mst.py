@@ -14,7 +14,7 @@ for line in f:
     if len(sent) > 1:
         #if len(sent)<8:
             #print sent
-        wrds += sent[1] + "\t";
+        wrds += sent[1].replace(' ','') + "\t";
         pos += sent[3] + "\t";
         labs += sent[7] + "\t";
         par += sent[6] + "\t";

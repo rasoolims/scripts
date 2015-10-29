@@ -65,10 +65,10 @@ class LanguageModel:
 		for i in range(4,len(words)):
 			unigram=words[i]
 			uniprob=self.unigramTable[unigram]
-			
+
 			bigram=words[i-1]+' '+words[i]
 			biprob= self.bigramTable[bigram]
-			
+
 			trigram=words[i-2]+' '+words[i-1]+' '+words[i]
 			triprob=self.trigramTable[trigram]
 
@@ -77,14 +77,34 @@ class LanguageModel:
 
 			fivegram=words[i-4]+' '+words[i-3]+' '+words[i-2]+' '+words[i-1]+' '+words[i]
 			fiveprob=self.fivegramTable[fivegram]
-			
+
 			prob=self.l1*fiveprob+self.l2*fourprob+self.l3*triprob+self.l4*biprob+self.l5*uniprob
 			prob=self.smoothvalue+(1- self.smoothvalue)*prob
 			senprob+=math.log(prob)
 
 		return senprob
 
+	def score_gram(self, gram):
+		if len(gram)<5:
+			l = len(gram)
+			for i in range(0,5-l):
+				gram.append('<s>')
+
+		unigram = gram[-1]
+		uniprob=self.unigramTable[unigram]
+		bigram = gram[-2] +' '+gram[-1]
+		biprob= self.bigramTable[bigram]
+		trigram =gram[-3] +' '+ gram[-2] +' '+gram[-1]
+		triprob=self.trigramTable[trigram]
+		fourgram =gram[-4] +' '+ gram[-3] +' '+ gram[-2] +' '+gram[-1]
+		fourprob=self.fourgramTable[fourgram]
+		fivegram =gram[-5] +' '+gram[-4] +' '+ gram[-3] +' '+ gram[-2] +' '+gram[-1]
+		fiveprob=self.fivegramTable[fivegram]
+		prob=self.l1*fiveprob+self.l2*fourprob+self.l3*triprob+self.l4*biprob+self.l5*uniprob
+		prob=self.smoothvalue+(1- self.smoothvalue)*prob
+		return math.log(prob)
+
 	def score(self, s):
-		newS='<s> <s> '+s.strip()+' </s>'
+		newS='<s> <s> <s> <s>'+s.strip()+' </s>'
 		words=newS.split(' ')
 		return self.score_arr(words)
