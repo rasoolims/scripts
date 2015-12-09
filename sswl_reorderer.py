@@ -279,9 +279,13 @@ writer2 = codecs.open(os.path.abspath(sys.argv[4])+'.reordered_lm','w')
 
 BeamElement = namedtuple("BeamElement", ["sequence","elements", "tag_dict","score"])
 
+count = 0
 for tree in trees:
-	if not DependencyTree.is_projective(tree.heads):
-		continue
+	count+=1
+	if count %100 ==0:
+		print 'count=',str(count)
+	#if not DependencyTree.is_projective(tree.heads):
+		#continue
 
 	s1 =  ' '.join(tree.words)
 	p = assign_positions(tree,rules)
@@ -335,10 +339,14 @@ for tree in trees:
 	#print '------------------------------------------------------'
 	#print l2
 	#print r2
+	''''
 	new_order = reorder_based_on_lm(new_tree, l2,r2, lang_model,beam,1,100)
-	rev_order = list()
+	rev_order = [0]*len(new_order)
+	i = 1
 	for n in new_order:
-		rev_order.append(n)
+		rev_order[n-1] = i
+		i+= 1
+	
 
 	new_words = list()
 	new_tags = list()
@@ -348,8 +356,12 @@ for tree in trees:
 		new_words.append(new_tree.words[n-1])
 		new_tags.append(new_tree.tags[n-1])
 		new_labels.append(new_tree.labels[n-1])
-		new_heads.append(rev_order[new_tree.heads[n-1]-1])
+		if new_tree.heads[n-1]==0:
+			new_heads.append(0)
+		else:
+			new_heads.append(rev_order[new_tree.heads[n-1]-1])
 
+	
 	reordered_tree = DependencyTree(new_words, new_tags, new_heads, new_labels)
 
 	the_same = True
@@ -368,6 +380,8 @@ for tree in trees:
 		ordd = ' '.join([str(x) for x in new_order])
 		print l2
 		print r2
+		print new_order
+		print rev_order
 		print ordd+'\n'
 		print new_tree.conll_str()+'\n\n'
 		print reordered_tree.conll_str()+'\n\n'
@@ -376,6 +390,7 @@ for tree in trees:
 		#writer2.write(str(the_same)+'\t'+ordd+'-->\n')
 	#writer2.write(new_tree.conll_str()+'\n\n')
 	writer2.write(reordered_tree.conll_str()+'\n\n')
+	'''
 
 
 writer.close()	

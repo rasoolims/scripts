@@ -1,7 +1,8 @@
+# coding: utf8
 import os,sys,codecs
 
 
-sens=codecs.open(os.path.abspath(sys.argv[1]),'r').read().strip().split('\n')
+sens=codecs.open(os.path.abspath(sys.argv[1]),'r',encoding='utf8').read().strip().split('\n')
 
 spacing=False
 if len(sys.argv)>3 and sys.argv[3]=='true':
@@ -17,9 +18,11 @@ for sen in sens:
 	for w in ws:
 		if w.endswith(','):
 			w=w[:-1]+' '+','
+		if w.endswith(u'、'):
+			w=w[:-1]+u' 、'
 		o.append(w)
 	output.append((' '.join(o)).replace('  ',' ').replace('  ',' ').replace('  ',' '))
 
-codecs.open(os.path.abspath(sys.argv[2]),'w').write('\n'.join(output))
+codecs.open(os.path.abspath(sys.argv[2]),'w',encoding='utf8').write('\n'.join(output))
 
 print 'done!'

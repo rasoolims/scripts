@@ -35,7 +35,7 @@ for d in os.listdir(dir1):
 
 
 		if len(c1.split('\n'))>len(c2.split('\n')):
-			print dir2
+			print dir2+'/'+l1+'.txt'
 			print len(c1.split('\n')),len(c2.split('\n'))
 		else:
 			writer1.write(c1)

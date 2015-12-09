@@ -5,10 +5,14 @@ from extract_dependency_spans import SpanInfo
 class DependencyTree:
 	def __init__(self, words, tags, heads, labels):
 		self.words = words
+		self.lemmas = words
 		self.tags = tags
+		self.ftags = tags
 		self.heads = heads
 		self.labels = labels
 		self.reverse_tree = defaultdict(set)
+		self.lang_id = ''
+		self.weight = 1
 
 		self.index = dict()
 		self.reverse_index = dict()
@@ -98,15 +102,25 @@ class DependencyTree:
 		tags = list()
 		heads = list()
 		labels = list()
+		lemmas = list()
+		ftags = list()
 
+		l_id = ''
 		for line in lines:
 			spl = line.split('\t')
 			words.append(spl[1])
+			lemmas.append(spl[2])
 			tags.append(spl[3])
+			ftags.append(spl[4])
 			heads.append(int(spl[6]))
+			l_id = spl[5]
 			labels.append(spl[7])
 
-		return DependencyTree(words, tags, heads, labels)
+		tree = DependencyTree(words, tags, heads, labels)
+		tree.lang_id = l_id
+		tree.lemmas = lemmas
+		tree.ftags = ftags
+		return tree
 
 	@staticmethod
 	def load_trees_from_file(file_str):
@@ -232,7 +246,7 @@ class DependencyTree:
 		lst = list()
 
 		for i in range(0,len(self.words)):
-			ln = str(i+1)+'\t'+self.words[i]+'\t'+self.words[i]+'\t'+self.tags[i]+'\t'+self.tags[i]+'\t_\t'+str(self.heads[i])+'\t'+self.labels[i]+'\t_\t_'
+			ln =str(i+1) +'\t'+self.words[i]+'\t'+self.lemmas[i]+'\t'+self.tags[i]+'\t'+self.ftags[i]+'\t'+self.lang_id+'\t'+str(self.heads[i])+'\t'+self.labels[i]+'\t'+str(self.weight)+'\t_'
 			lst.append(ln)
 		return '\n'.join(lst)
 

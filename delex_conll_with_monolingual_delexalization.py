@@ -1,7 +1,6 @@
 import os,sys,codecs
 
 reader1=codecs.open(os.path.abspath(sys.argv[1]),'r')
-
 dic_entries = codecs.open(os.path.abspath(sys.argv[2]),'r').read().strip().split('\n')
 
 word_dict = set()
