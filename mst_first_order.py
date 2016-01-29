@@ -90,10 +90,10 @@ def decode(l, dep_counts):
 trees= list()
 print 'loading trees'
 weights = list()
-for i in range(1,len(sys.argv)-2, 2):
+for i in range(1,len(sys.argv)-1):
     sys.stdout.write(str(i)+'...')
     trees.append(DependencyTree.load_trees_from_file(os.path.abspath(sys.argv[i])))
-    weights.append(float(sys.argv[i+1]))
+    #weights.append(float(sys.argv[i+1]))
 sys.stdout.write('\n')
 writer = codecs.open(os.path.abspath(sys.argv[-1]),'w')
 
@@ -105,12 +105,17 @@ for i in range(0, len(trees[0])):
         dep_counts[j]=defaultdict(float)
 
     for j in range(0,len(trees)):
-        weight = weights[j]
+        weight = 1 #weights[j]
         for m in range(1,l):
             h = trees[j][i].heads[m-1]
-            dep_counts[h][m] += weight
+            try:
+                dep_counts[h][m] += weight
+            except:
+                print  trees[j][i].heads
+                sys.exit(0)
 
     new_heads = decode(l, dep_counts)[1:]
+
     trees[0][i].heads = new_heads
     writer.write(trees[0][i].tree_str().strip()+'\n\n')
 

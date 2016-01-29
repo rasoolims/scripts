@@ -19,7 +19,9 @@ writer = codecs.open(os.path.abspath(sys.argv[3]),'w')
 for tree in trees:
 	for i in range(0,len(tree.words)):
 		tree.lemmas[i] = tree.words[i]
-		if word_dict.has_key(tree.words[i].lower()):
+		if tree.tags[i] == '.':
+			tree.words[i] = tree.words[i]
+		elif word_dict.has_key(tree.words[i].lower()):
 			tree.words[i] = word_dict[tree.words[i].lower()]
 		else:
 			tree.words[i] = "_"

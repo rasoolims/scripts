@@ -25,7 +25,7 @@ sys.stdout.flush()
 line=src_reader.readline()
 line_count=0
 while line:
-	line=line.strip()
+	line=line.strip().lower()
 	if line:
 		line_count+=1
 		src_sentences[line_count]=line.split(' ')
@@ -44,7 +44,7 @@ sys.stdout.flush()
 
 line_count=0
 while line:
-	line=line.strip()
+	line=line.strip().lower()
 	if line:
 		line_count+=1
 		dst_sentences[line_count]=line.split(' ')

@@ -1,0 +1,38 @@
+import os,sys,codecs
+from collections import defaultdict
+from os import listdir
+from os.path import isfile, join
+import glob
+
+files = glob.glob(os.path.abspath(sys.argv[1]))
+output_dir = os.path.abspath(sys.argv[2])+'/'
+
+
+langs = set()
+lang_files = defaultdict(set)
+for f in files:
+	t = f[f.rfind('/')+1:]
+	t = t[:t.find('.')]
+	langs.add(t)
+	lang_files[t].add()
+
+for l1 in langs:
+	for l2 in langs:
+		if l1==l2:
+			continue
+
+		print '>>>',l1,l2
+		w1 = codecs.open(output_dir+l1+"_"+l2+'.'+l1,'w')
+		w2 = codecs.open(output_dir+l2+"_"+l1+'.'+l2,'w')
+
+		for f1 in lang_files[l1]:
+			for f2 in lang_files[l2]:
+				print f1
+				print f2
+				w1.write(codecs.open(f1,'r').read().strip())
+				w1.write('\n')
+				w2.write(codecs.open(f2,'r').read().strip())
+				w2.write('\n')
+		w1.close()
+		w2.close()
+

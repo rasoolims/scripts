@@ -28,6 +28,7 @@ x_pair = read_grams(os.path.abspath(sys.argv[2]))
 bigrams = x_pair[0]
 trigrams = x_pair[1]
 unigrams = x_pair[2]
+
 writer =  codecs.open(os.path.abspath(sys.argv[3]),'w')
 
 for tree in trees:

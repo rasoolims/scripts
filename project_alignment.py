@@ -245,9 +245,11 @@ for s in src_alignment_dic.keys():
 					pos_restriction_labels2[dst_mod-1]=src_label
 					pos_restriction_projection=True
 			except:
+				print  ' '.join(src_tree[0])
 				print src_tree[1]
 				print ' '.join(dst_tree[0])
 				print len(dst_tree[0]),len(dst_tree[1]),len(dst_tree[3]),src_head,src_mod,dst_head,dst_mod
+				print len(no_restriction_labels),dst_mod,src_label
 				print alignment
 				print s
 				exception=True

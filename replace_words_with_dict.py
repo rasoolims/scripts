@@ -11,9 +11,8 @@ line = dic_reader.readline()
 while line:
 	spl = line.strip().split()
 	if len(spl)>1:
-		dictionaries[spl[0]].append(spl[1])
+		dictionaries[spl[1]].append(spl[0])
 	line = dic_reader.readline()
-
 
 
 reader = codecs.open(os.path.abspath(sys.argv[2]),'r')
@@ -22,7 +21,7 @@ line = reader.readline()
 cnt = 0
 rc = 0
 while line:
-	spl = line.strip().split()
+	spl = line.strip().lower().split()
 	for i in range(0,min(len(spl),3)):
 		r = random.randint(0,len(spl)-1)
 		if dictionaries.has_key(spl[r]):
