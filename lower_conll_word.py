@@ -11,6 +11,7 @@ while line1:
 	spl=line1.strip().split('\t')
 	if len(spl)>2:
 		spl[1] = spl[1].lower()
+		spl[2] = spl[1].lower()
 		writer1.write('\t'.join(spl)+'\n')
 	else:
 		writer1.write(line1)

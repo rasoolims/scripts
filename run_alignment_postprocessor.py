@@ -26,8 +26,8 @@ for dr in dirs:
 	align2 = dr +'/'+l2+'_'+l1+'.align.A3.final'
 	intersect1 =  dr +'/'+l1+'2'+l2+'.intersect'
 	intersect2 =  dr +'/'+l2+'2'+l1+'.intersect'
-	raw_low1 =  dr +'/corpus.tok.clean.lower.'+l1
-	raw_low2 =  dr +'/corpus.tok.clean.lower.'+l2
+	raw_low1 =  dr +'/corpus.tok.clean.'+l1
+	raw_low2 =  dr +'/corpus.tok.clean.'+l2
 	raw1 =  dr +'/corpus.tok.clean.'+l1
 	raw2 =  dr +'/corpus.tok.clean.'+l2
 	conll1 =  dr +'/corpus.tok.clean.tag.conll.'+l1

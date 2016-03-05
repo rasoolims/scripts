@@ -18,7 +18,7 @@ reader = codecs.open(os.path.abspath(sys.argv[2]),'r')
 line = reader.readline()
 writer = codecs.open(os.path.abspath(sys.argv[3]),'w')
 while line:
-	spl = line.strip().lower().split(' ')
+	spl = line.strip().split(' ')
 	has_context = False
 	for i in range(0, len(spl)):
 		if dictionary.has_key(spl[i]):

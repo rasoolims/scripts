@@ -21,8 +21,8 @@ for tree in trees:
 		tree.lemmas[i] = tree.words[i]
 		if tree.tags[i] == '.':
 			tree.words[i] = tree.words[i]
-		elif word_dict.has_key(tree.words[i].lower()):
-			tree.words[i] = word_dict[tree.words[i].lower()]
+		elif word_dict.has_key(tree.words[i]):
+			tree.words[i] = word_dict[tree.words[i]]
 		else:
 			tree.words[i] = "_"
 		
