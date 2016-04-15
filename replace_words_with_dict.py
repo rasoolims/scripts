@@ -23,19 +23,14 @@ rc = 0
 while line:
 	spl = line.strip().split()
 	k = 0
-	already = set()
 	for i in range(0,len(spl)):
-		r = random.randint(0,len(spl)-1)
-
-		if not r in already and dictionaries.has_key(spl[r]):
-			cands = dictionaries[spl[r]]
+		r = random.random()
+		
+		if r<0.3 and dictionaries.has_key(spl[i]):
+			cands = dictionaries[spl[i]]
 			ri = random.randint(0, len(cands)-1)
-			spl[r] = cands[ri]
+			spl[i] = cands[ri]
 			rc += 1
-			k+=1
-		already.add(r)
-		if k==3:
-			break
 	cnt += 1
 	if cnt%10000 ==0:
 		sys.stdout.write(str(cnt)+'...')
