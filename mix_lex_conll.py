@@ -23,8 +23,7 @@ def read_grams(ngram_files):
 
 print 'reading trees'
 trees = DependencyTree.load_trees_from_conll_file(os.path.abspath(sys.argv[1]))
-writer =  codecs.open(os.path.abspath(sys.argv[2]),'w')
-
+writer = codecs.open(os.path.abspath(sys.argv[2]),'w')
 
 ngram_files = list()
 for i in range(3, len(sys.argv)):
@@ -32,7 +31,6 @@ for i in range(3, len(sys.argv)):
 
 print 'reading ngrams'
 unigrams = read_grams(ngram_files)
-
 
 print 'changing trees'
 count =0 
