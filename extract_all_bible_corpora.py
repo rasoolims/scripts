@@ -13,7 +13,7 @@ for d in os.listdir(dir1):
 
 	for f in fs:
 		lang = f[f.rfind('/')+1:f.rfind('.')]
-		if lang!='English-WEB':
+		if lang!='en_web':
 			langs.add(lang)
 
 print langs
@@ -59,8 +59,8 @@ for l1 in langs:
 					writer1.write(c1)
 					writer2.write(c2)
 
-			if l1=='English' and 'English-WEB.txt' in fs and l2+'.txt' in fs:
-				c1=codecs.open(dir2+'/'+'English-WEB'+'.txt','r').read()
+			if l1=='en' and 'en_web.txt' in fs and l2+'.txt' in fs:
+				c1=codecs.open(dir2+'/'+'en_web'+'.txt','r').read()
 				c2=codecs.open(dir2+'/'+l2+'.txt','r').read()
 
 				output=list()
@@ -83,9 +83,9 @@ for l1 in langs:
 					writer1.write(c1)
 					writer2.write(c2)
 
-			if l2=='English' and 'English-WEB.txt' in fs and l1+'.txt' in fs:
+			if l2=='en' and 'en_web.txt' in fs and l1+'.txt' in fs:
 				c1=codecs.open(dir2+'/'+l1+'.txt','r').read()
-				c2=codecs.open(dir2+'/English-WEB.txt','r').read()
+				c2=codecs.open(dir2+'/en_web.txt','r').read()
 
 				output=list()
 				for c in c1.split('\n'):

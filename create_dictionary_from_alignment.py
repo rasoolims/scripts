@@ -80,11 +80,6 @@ while line:
 sys.stdout.write('\n')
 
 
-# initializing different types of outputs
-src_dst_no_restriction_writer=codecs.open(output_file_name+'.src_dst_no_restriction','w')
-src_dst_pos_restriction_writer=codecs.open(output_file_name+'.src_dst_pos_restriction','w')
-src_dst_pos_restriction_writer2=codecs.open(output_file_name+'.src_dst_or_pos_restriction','w')
-
 # getting src projections
 sys.stdout.write('getting src projections...')
 sys.stdout.flush()
