@@ -20,20 +20,21 @@ def lang_sim(l1,l2):
 
 input_folder = os.path.abspath(sys.argv[2])+'/'
 output_folder = os.path.abspath(sys.argv[3])+'/'
+min_count = int(sys.argv[4])
 
 lang_files = defaultdict(list)
-for f in os.listdir(input_folder):
+for f in sorted(os.listdir(input_folder)):
 	l = f
 	if '_' in l:
 		l = f[:f.find('_')]
 	lang_files[l].append(input_folder+f)
 
-for f in lang_files:
+for f in sorted(lang_files.keys()):
 	print f
 	train_files = list()
 	lang_set = set()
 	for f2 in lang_files.keys():
-		if f==f2 or lang_sim(f,f2)<4:
+		if f==f2 or lang_sim(f,f2)<min_count:
 			continue
 		lang_set.add(f2)
 		for fl in lang_files[f2]:

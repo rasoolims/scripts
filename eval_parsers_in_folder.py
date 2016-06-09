@@ -23,11 +23,12 @@ def eval_conll(parsed,gold):
 		spl1 = line1.strip().split('\t')
 		spl2 = line2.strip().split('\t')
 		if len(spl1)>5:
-			all_d+=1
-			if spl1[6]==spl2[6]:
-				u_c+=1
-				if spl1[7]==spl2[7]:
-					l_c+=1
+			if spl2[3]!='PUNCT':
+				all_d+=1
+				if spl1[6]==spl2[6]:
+					u_c+=1
+					if spl1[7]==spl2[7]:
+						l_c+=1
 
 		line1 = r1.readline()
 
@@ -41,7 +42,7 @@ print os.listdir(conll_folder)
 print 'lang\tdata\tuas\tlas'
 output = list()
 output.append('lang\tdata\tuas\tlas')
-for f in os.listdir(conll_folder):
+for f in sorted(os.listdir(conll_folder)):
 	l = f
 	if '_' in f:
 		l = f[:f.rfind('_')]

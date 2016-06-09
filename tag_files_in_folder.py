@@ -10,9 +10,12 @@ print os.listdir(input_folder)
 commands = list()
 for f in os.listdir(input_folder):
 	print f
-	command = 'nice java -jar ' + pos_tagger_jar+ ' tag -input '+ input_folder+f +' -model '+model_path+f + ' -output ' + output_folder+f + '&> /tmp/pos_log_'+f +'.tmp &'
+	l = f
+	if '_' in f:
+		l = f[:f.find('_')]
+	command = 'nice java -jar ' + pos_tagger_jar+ ' tag -input '+ input_folder+f +' -model '+model_path+l + ' -output ' + output_folder+f + '&> /tmp/pos_log_'+f +'.tmp &'
 	if len(commands)>=4:
-		command = 'nice java -jar ' + pos_tagger_jar+ ' tag -input '+ input_folder+f +' -model '+model_path+f + ' -output ' + output_folder+f 
+		command = 'nice java -jar ' + pos_tagger_jar+ ' tag -input '+ input_folder+f +' -model '+model_path+l + ' -output ' + output_folder+f 
 	commands.append(command)
 
 	if len(commands)>=5:

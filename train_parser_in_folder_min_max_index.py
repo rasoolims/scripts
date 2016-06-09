@@ -13,9 +13,12 @@ i = 0
 for f in os.listdir(input_folder):
 	if i>=min_index and i<=max_index:
 		print f
-		command = 'nice java -jar ' + yara_jar+ ' train nt:4 iter:10 -train-file '+ input_folder+f +' -model '+output_folder+f + ' -cluster ' + brown_cluster_files+f + '&> /tmp/parse_log_'+f +'.tmp &'
+		l = f
+		if '_' in f:
+			l = f[:f.find('_')]
+		command = 'nice java -jar ' + yara_jar+ ' train nt:4 iter:10 -train-file '+ input_folder+f +' -model '+output_folder+f + ' -cluster ' + brown_cluster_files+l + '&> /tmp/parse_log_'+f +'.tmp &'
 		if len(commands)>=4:
-			command = 'nice java -jar ' + yara_jar+ ' train nt:4 iter:10 -train-file '+ input_folder+f +' -model '+output_folder+f + ' -cluster ' + brown_cluster_files+f 
+			command = 'nice java -jar ' + yara_jar+ ' train nt:4 iter:10 -train-file '+ input_folder+f +' -model '+output_folder+f + ' -cluster ' + brown_cluster_files+l 
 		commands.append(command)
 
 		if len(commands)>=5:
