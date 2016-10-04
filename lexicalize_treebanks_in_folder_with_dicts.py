@@ -9,11 +9,14 @@ if len(sys.argv)<4:
 dic_folder = os.path.abspath(sys.argv[1])+'/'
 input_folder = os.path.abspath(sys.argv[2])+'/'
 output_folder = os.path.abspath(sys.argv[3])+'/'
+use_in_word = False
+if len(sys.argv)>4 and sys.argv[4]=='true':
+	use_in_word = True
 ratio = 0.3
 
 dictionaries = defaultdict()
 
-print 'reading dicttionaries...'
+print 'reading dictionaries...'
 c = 0
 for f in os.listdir(dic_folder):
 	dictionaries[f]= defaultdict()
@@ -41,14 +44,20 @@ for f in os.listdir(input_folder):
 			l_id = spl[5]
 			lp = l_id+'2'+f
 			if dictionaries[lp].has_key(spl[1]):
-				spl[2] = spl[1]
-				spl[1] = dictionaries[lp][spl[1]]
-
-			elif spl[3]=='PUNCT':
+				if not use_in_word:
+					spl[2] = spl[1]
+					spl[1] = dictionaries[lp][spl[1]]
+				else:
+					spl[1] = dictionaries[lp][spl[1]]
+					spl[2] = spl[1]
+			elif spl[3]=='PUNCT' or spl[3]=='.':
 				spl[2] = spl[1]
 			else:
-				spl[2] = spl[1]
-				spl[1] = '_'
+				if not use_in_word:
+					spl[2] = spl[1]
+					spl[1] = '_'
+				else:
+					spl[2] = spl[1]
 
 		writer.write('\t'.join(spl)+'\n')
 		line = reader.readline()

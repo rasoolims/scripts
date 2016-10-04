@@ -24,9 +24,9 @@ def same_pos_kind(p1,p2):
 		if p2=='ADV' or p2=='PRON':
 			return True
 	if p1=='X':
-		if p2=='NUM' or p2=='PUNCT':
+		if p2=='NUM' or p2=='PUNCT' or p2 == ".":
 			return True
-	if p1=='PUNCT':
+	if p1=='PUNCT' or p2 == ".":
 		if p2=='X':
 			return True
 	if p1=='NUM':

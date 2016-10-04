@@ -1,4 +1,4 @@
-import os,sys,codecs,random
+import os,sys,codecs,random,gzip
 from collections import defaultdict
 
 if len(sys.argv)<4:
@@ -13,7 +13,7 @@ ratio = 0.3
 
 dictionaries = defaultdict()
 
-print 'reading dicttionaries...'
+print 'reading dictionaries...'
 c = 0
 for f in os.listdir(dic_folder):
 	l1 = f[:f.rfind('2')]
@@ -38,9 +38,11 @@ print 'code switching...'
 c = 0
 for f in os.listdir(wiki_folder):
 	l = f
+	if '.gz' in l:
+		l = l[:-3]
 	print f
 	dct = dictionaries[l]
-	reader = codecs.open(wiki_folder+f,'r')
+	reader = gzip.open(wiki_folder+f,'r')
 	line = reader.readline()
 
 	while line:

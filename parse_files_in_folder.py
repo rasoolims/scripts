@@ -6,6 +6,7 @@ yara_jar = os.path.abspath(sys.argv[2])
 model_path = os.path.abspath(sys.argv[3])+'/'
 output_folder = os.path.abspath(sys.argv[4])+'/'
 
+
 print os.listdir(input_folder)
 commands = list()
 for f in os.listdir(input_folder):

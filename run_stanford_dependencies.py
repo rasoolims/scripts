@@ -9,12 +9,12 @@ commands=list()
 os.chdir(os.path.dirname(stanford_path))
 for root, dirs, files in os.walk(path):
 	for name in files:
-		if name.endswith(".parse"):
+		if name.endswith(".mrg"):
 			full_path=root+'/'+name
 			
 			output_path=full_path+'.conll'
 			command='java -cp '+stanford_path+' -Xmx2g edu.stanford.nlp.trees.EnglishGrammaticalStructure  -treeFile ' +\
-			full_path+' -conllx basic makeCopulaHead -keepPunct > '+output_path 
+			full_path+' -conllx -basic -makeCopulaHead -keepPunct  > '+output_path 
 			commands.append(command)
 			if len(commands)>30:
 				for i in range(0,len(commands)-1):

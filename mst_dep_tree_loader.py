@@ -12,7 +12,7 @@ class DependencyTree:
 		self.labels = labels
 		self.reverse_tree = defaultdict(set)
 		self.lang_id = ''
-		self.weight = 1
+		self.weight = 1.0
 
 		self.index = dict()
 		self.reverse_index = dict()
