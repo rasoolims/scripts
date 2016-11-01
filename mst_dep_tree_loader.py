@@ -106,6 +106,7 @@ class DependencyTree:
 		ftags = list()
 
 		l_id = ''
+		w = 1
 		for line in lines:
 			spl = line.split('\t')
 			words.append(spl[1])
@@ -115,11 +116,16 @@ class DependencyTree:
 			heads.append(int(spl[6]))
 			l_id = spl[5]
 			labels.append(spl[7])
+			try:
+				w = float(spl[8])
+			except:
+				w = 1
 
 		tree = DependencyTree(words, tags, heads, labels)
 		tree.lang_id = l_id
 		tree.lemmas = lemmas
 		tree.ftags = ftags
+		tree.weight = w
 		return tree
 
 	@staticmethod

@@ -30,6 +30,7 @@ mst2conll=curr_dir+'mst2conll.py'
 conll2mst=curr_dir+'conll2mst.py'
 get_best_tree=curr_dir+'get_best_trees_by_score.py'
 
+print os.getcwd()
 ##############################################################################################################
 #####                                           TRAINING FULL                                            #####
 ##############################################################################################################
@@ -46,6 +47,13 @@ print command
 os.system(command)
 
 ##############################################################################################################
+command = 'cp '+ model_dir+'barchybrid.model'+iter1 + ' '+model_dir+'/full.model'
+print command 
+os.system(command)
+
+command = 'cp '+model_dir+'/params.pickle '+ model_dir+'/full.params.pickle'
+print command
+os.system(command)
 
 print colored('partially parsing partial 7 trees','red')
 command='nice python -u '+parser_path+' --predict --partial --outdir '+model_dir+'/ --test '+partial7_conll_path+' --model '+model_dir+'barchybrid.model'+iter1+' --params '+model_dir+'/params.pickle --extrn '+embed_path
@@ -74,6 +82,14 @@ os.system(command)
 
 ###############################################################################################################
 
+command = 'cp '+ model_dir+'barchybrid.model'+iter2 + ' '+model_dir+'/partial7.model'
+print command 
+os.system(command)
+
+command = 'cp '+model_dir+'/params.pickle '+ model_dir+'/partial7.params.pickle'
+print command
+os.system(command)
+
 print colored('partially parsing partial 5 trees','red')
 command='nice python -u '+parser_path+' --predict --partial --outdir '+model_dir+'/ --test '+partial5_conll_path+'  --model '+model_dir+'barchybrid.model'+iter1+' --params '+model_dir+'/params.pickle --extrn ' + embed_path
 if embed_path =='':
@@ -98,6 +114,13 @@ print command
 os.system(command)
 
 ###############################################################################################################
+command = 'cp '+ model_dir+'barchybrid.model'+iter3 + ' '+model_dir+'/partial5.model'
+print command 
+os.system(command)
+
+command = 'cp '+model_dir+'/params.pickle '+ model_dir+'/partial7.params.pickle'
+print command
+os.system(command)
 
 print colored('partially parsing partial 1 trees','red')
 command='nice python -u '+parser_path+' --predict --partial --outdir '+model_dir+'/ --test '+partial1_conll_path+'  --model '+model_dir+'barchybrid.model'+iter1+' --params '+model_dir+'/params.pickle --extrn '+embed_path

@@ -1,7 +1,6 @@
 import os,sys,codecs
 from collections import defaultdict
 
-convertor = os.path.dirname(os.path.abspath(sys.argv[0]))+'/put_word_to_lemma.py'
 input_folder = os.path.abspath(sys.argv[1])+'/'
 jar_file = os.path.abspath(sys.argv[2])
 output_folder = os.path.abspath(sys.argv[3])+'/'
