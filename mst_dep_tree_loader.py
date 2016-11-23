@@ -60,14 +60,13 @@ class DependencyTree:
 		rootN=0
 		for dep1 in range(1,len(heads)+1):
 			head1=heads[dep1-1]
-
+			if head1==0:
+				rootN+=1
 			if rev_head.has_key(dep1):
 				for d2 in rev_head[dep1]:
 					if (d2<head1 and head1<dep1) or (d2>head1 and head1>dep1) and head1>0:
 						return False
 
-			if head1==0:
-				rootN+=1
 			for dep2 in range(1,len(heads)+1):
 				head2=heads[dep2-1]
 				if head1==-1 or head2==-1:
@@ -82,7 +81,7 @@ class DependencyTree:
 						return False
 					if head1<head2 and head1>dep2 and dep1<dep2:
 						return False
-		if rootN!=1:
+		if rootN<1:
 			return False
 		return True
 

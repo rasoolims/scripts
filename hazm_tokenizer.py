@@ -18,7 +18,7 @@ while line:
 	if line.strip():
 		n=normalizer.normalize(line.strip())
 		tok=word_tokenize(n)
-		sen=u' '.join(tok)
+		sen=u' '.join(tok).replace('_',' ').replace('  ',' ').replace('  ',' ')
 		l=sen+u'\n'
 		writer.write(l)
 	else:
