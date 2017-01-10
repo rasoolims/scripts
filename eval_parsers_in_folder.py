@@ -47,11 +47,11 @@ for f in sorted(os.listdir(conll_folder)):
 	if '_' in f:
 		l = f[:f.rfind('_')]
 
-	command = 'nice java -jar ' + yara_jar+ ' parse_conll  -input '+ conll_folder+f +' -model '+model_folder+l +' -output '+ '/tmp/__parse__.log'
+	command = 'nice java -jar ' + yara_jar+ ' parse_conll  -input '+ conll_folder+f +' -model '+model_folder+l +' -output '+ eval_folder+f
 	os.system(command)
 
 
-	uas,las = eval_conll('/tmp/__parse__.log',conll_folder+f)
+	uas,las = eval_conll(eval_folder+f,conll_folder+f)
 	print l+'\t'+f+'\t'+str("{0:.2f}".format(uas))+'\t'+str("{0:.2f}".format(las))
 	output.append(l+'\t'+f+'\t'+str("{0:.2f}".format(uas))+'\t'+str("{0:.2f}".format(las)))
 		

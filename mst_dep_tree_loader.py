@@ -43,6 +43,28 @@ class DependencyTree:
 		return True
 
 	@staticmethod
+	def is_nonprojective_arc(d1,h1,d2,h2):
+		if (d1<d2 and (h1>d2 and h1<h2 and h2<d1) or (h1<d2 and h1>h2 and h2>d1)):
+			return True
+		if (d2<d1 and (h2>d1 and h2<h1 and h1<d2) or (h2<d1 and h2>h1 and h1>d2)):
+			return True
+		return False
+
+	@staticmethod
+	def get_nonprojective_arcs(heads):
+		non_projectives = set()
+		for i in xrange(len(heads)):
+			if i in non_projectives:
+				continue
+			dep1,head1 = i+1,heads[i]
+			for j in range(i+1,len(heads)):
+				dep2,head2 = j+1, heads[j]
+				if DependencyTree.is_nonprojective_arc(dep1, head1, dep2, head2):
+					non_projectives.add(i)
+					non_projectives.add(j)
+		return non_projectives
+
+	@staticmethod
 	def is_projective(heads):
 		rev_head=defaultdict(list)
 		for dep1 in range(1,len(heads)+1):
@@ -252,6 +274,15 @@ class DependencyTree:
 
 		for i in range(0,len(self.words)):
 			ln =str(i+1) +'\t'+self.words[i]+'\t'+self.lemmas[i]+'\t'+self.tags[i]+'\t'+self.ftags[i]+'\t'+self.lang_id+'\t'+str(self.heads[i])+'\t'+self.labels[i]+'\t'+str(self.weight)+'\t_'
+			lst.append(ln)
+		return '\n'.join(lst)
+
+	# Uses ftag as chunk tag.
+	def chunk_str(self):
+		lst = list()
+
+		for i in xrange(len(self.words)):
+			ln = self.words[i]+' '+self.tags[i]+' '+self.ftags[i]
 			lst.append(ln)
 		return '\n'.join(lst)
 

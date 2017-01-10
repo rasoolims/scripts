@@ -26,9 +26,9 @@ os.system(command)
 command = 'python '+convertor+ ' '+ c1 +' > '+m1
 print command
 os.system(command)
-command = 'rm -f ' + c1 
-print command
-os.system(command)
+#command = 'rm -f ' + c1 
+#print command
+#os.system(command)
 
 command  = 'java -jar '+jar_file + ' '+ lf2 + ' '+r2 + ' '+ c2
 print command
@@ -36,6 +36,6 @@ os.system(command)
 command = 'python '+convertor+ ' '+ c2 +' > '+m2
 print command
 os.system(command)
-command = 'rm -f ' + c2 
-print command
-os.system(command)
+#command = 'rm -f ' + c2 
+#print command
+#os.system(command)

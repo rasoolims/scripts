@@ -103,7 +103,7 @@ for sa in src_alignment_dic.keys():
 		seen_sorted = sorted(seen_phrases[seen_phrase])
 		consistent = True
 		for i in range(seen_sorted[0],seen_sorted[-1]):
-			if dst_num[i] != seen_phrase and dst_num[i]!=0:
+			if dst_num[i] != seen_phrase:
 				consistent = False
 				break
 		consistents[seen_phrase] = consistent
@@ -111,15 +111,22 @@ for sa in src_alignment_dic.keys():
 	for seen_phrase in seen_phrases.keys():
 		consistent = consistents[seen_phrase]
 		if consistent:
+			writer2.write(str(seen_phrase)+'\n')
+			seen_sorted = sorted(seen_phrases[seen_phrase])
+			for ss in seen_sorted:
+				writer2.write(str(ss)+',')
+			writer2.write('\n')
 			for i in range(seen_sorted[0],seen_sorted[-1]):
 				if dst_num[i]==0:
 					dst_num[i] = seen_phrase
 					dst_phrase[i] = dst_phrase[seen_sorted[0]]
+			writer2.write('->'+str(seen_sorted[0])+'->B\n')
 			dst_phrase[seen_sorted[0]]='B-'+dst_phrase[seen_sorted[0]][2:]
-			for i in range(seen_sorted[0]+1,seen_sorted[-1]):
+			for i in range(seen_sorted[0]+1,seen_sorted[-1]+1):
 				dst_phrase[i]='I-'+dst_phrase[i][2:]
+				writer2.write('->'+str(i)+'->I\n')
 
-			if seen_sorted[-1]==seen_sorted[0]:
+			if len(seen_phrases[seen_phrase])==1:
 				dst_phrase[seen_sorted[0]]='B-'+dst_tags[seen_sorted[0]]+'P'
 		else:
 			for i in seen_phrases[seen_phrase]:
@@ -135,7 +142,6 @@ for sa in src_alignment_dic.keys():
 					to_add.append(i)
 		for i in to_add:
 			dst_phrase[i]='B-'+dst_tags[i]+'P'
-
 
 	is_full = True
 	for i in xrange(len(dst_words)):
