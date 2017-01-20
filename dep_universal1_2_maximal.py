@@ -127,7 +127,17 @@ t = DependencyTree.load_trees_from_conll_file(os.path.abspath(sys.argv[1]))
 writer = codecs.open(os.path.abspath(sys.argv[2]),'w')
 
 print 'writing trees'
-dropped = 0
+full = 0
 for tree in t:
+	for i in xrange(len(tree.ftags)):
+		tree.ftags[i] = '_'
 	writer.write(create_shallow_tree(tree))
+	is_full = True
+	for i in xrange(len(tree.ftags)):
+		if tree.ftags[i] == '_':
+			is_full = False
+			break
+	if is_full:
+		full+=1
 writer.close()
+print 'num of full',full,'out of',len(t)
