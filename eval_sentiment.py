@@ -24,7 +24,7 @@ for i in xrange(len(g_lab)):
 	else:
 		fn[g_lab[i]]+=1
 		fp[p_lab[i]]+=1
-		if verbose: print g_lines[i],g_lab[i]
+		if verbose: print g_lines[i],g_lab[i],p_lab[i]
 
 for lab in labels:
 	p,r = tp[lab]/(tp[lab]+fp[lab]) if (tp[lab]+fp[lab])>0 else 0 , tp[lab]/(tp[lab]+fn[lab]) if (tp[lab]+fn[lab])>0 else 0
