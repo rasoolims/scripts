@@ -14,8 +14,8 @@ for sen in sens:
 			if spl[3] == 'PUNCT': 
 				words.append('<SPLIT>')
 			words.append(spl[1].strip())
-			if 'SpaceAfter=No' in spl[9]:
-				words.append('<SPLIT>')
+			# if 'SpaceAfter=No' in spl[9]:
+			# 	words.append('<SPLIT>')
 
 	writer.write(' '.join(words).replace(' <SPLIT> ','<SPLIT>').replace(' <SPLIT> ','<SPLIT>').replace('<SPLIT> ','<SPLIT>').replace('<SPLIT> ','<SPLIT>').replace('«<SPLIT>' ,'<SPLIT>«').replace('[<SPLIT>' ,'<SPLIT>[').replace('(<SPLIT>' ,'<SPLIT>(').replace('(.<SPLIT>' ,'<SPLIT>(.').replace('(;<SPLIT>' ,'<SPLIT>(;').replace('<SPLIT><SPLIT>','<SPLIT>').replace('<SPLIT><SPLIT>','<SPLIT>')+'\n')
 

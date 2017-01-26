@@ -9,7 +9,7 @@ if verbose:
 
 
 correct = len([1 for i in xrange(len(g_lab)) if g_lab[i]==p_lab[i]])
-print float(correct)/len(g_lab)
+print round(100*float(correct)/len(g_lab),1)
 
 
 tp = defaultdict(float)
@@ -27,6 +27,6 @@ for i in xrange(len(g_lab)):
 		if verbose: print g_lines[i],g_lab[i],p_lab[i]
 
 for lab in labels:
-	p,r = tp[lab]/(tp[lab]+fp[lab]) if (tp[lab]+fp[lab])>0 else 0 , tp[lab]/(tp[lab]+fn[lab]) if (tp[lab]+fn[lab])>0 else 0
+	p,r = 100.0*tp[lab]/(tp[lab]+fp[lab]) if (tp[lab]+fp[lab])>0 else 0 , 100.0*tp[lab]/(tp[lab]+fn[lab]) if (tp[lab]+fn[lab])>0 else 0
 	f = 2*p*r /(p+r) if (p+r)>0 else 0
-	print lab,p,r,f
+	print lab,round(p,1),round(r,1),round(f,1)

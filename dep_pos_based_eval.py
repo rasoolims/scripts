@@ -19,6 +19,7 @@ h_tags = set()
 all_t = 0
 for i in xrange(len(gt)):
 	for j in xrange(len(gt[i].tags)):
+		if gt[i].tags[j]=='PUNCT': continue
 		all_t+=1
 		tags.add(gt[i].tags[j])
 		g_h_t = gt[i].tags[gt[i].heads[j]-1]

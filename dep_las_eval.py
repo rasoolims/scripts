@@ -15,6 +15,7 @@ labels = set()
 all_t = 0
 for i in xrange(len(gt)):
 	for j in xrange(len(gt[i].labels)):
+		if gt[i].labels[j] == 'p' or gt[i].labels[j] == 'punct': continue
 		all_t+=1
 		g_h_l = gt[i].labels[j]
 		p_h_l = pt[i].labels[j]
