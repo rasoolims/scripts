@@ -22,8 +22,8 @@ for l1 in langs:
 			continue
 
 		print '>>>',l1,l2
-		w1 = codecs.open(output_dir+l1+"_"+l2+'.'+l1,'w')
-		w2 = codecs.open(output_dir+l1+"_"+l2+'.'+l2,'w')
+		w1 = codecs.open(output_dir+l2+'.'+l1,'w')
+		w2 = codecs.open(output_dir+l1+'.'+l2,'w')
 
 		for f1 in lang_files[l1]:
 			for f2 in lang_files[l2]:

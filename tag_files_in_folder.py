@@ -1,30 +1,35 @@
 import os,sys,codecs
 from collections import defaultdict
 
-if len(sys.argv)<6:
-	print 'input_folder word2vec_path output_folder num_threads dim'
 input_folder = os.path.abspath(sys.argv[1])+'/'
-word2vec_path = os.path.abspath(sys.argv[2])
-output_folder = os.path.abspath(sys.argv[3])+'/'
-num_threads = int(sys.argv[4])
-dim = int(sys.argv[5])
-
+pos_tagger_jar = os.path.abspath(sys.argv[2])
+model_path = os.path.abspath(sys.argv[3])+'/'
+output_folder = os.path.abspath(sys.argv[4])+'/'
+delim = '_'
+if len(sys.argv)>5:
+	delim = sys.argv[5]
+	if delim=='|||':
+		delim = '\|\|\|'
 
 print os.listdir(input_folder)
 commands = list()
 for f in os.listdir(input_folder):
 	print f
-	command = 'cp '+input_folder+f + ' /tmp/'+f
-	print command
-	os.system(command)
-	command = 'gunzip /tmp/'+f
-	print command
-	os.system(command)
-	command = './'+word2vec_path+ ' -train /tmp/'+f + ' -output '+output_folder+f[:-3] + ' -size '+dim + ' -threads '+num_threads
-	print command
-	os.system(command)
-	command = 'rm -f /tmp/'+f
-	print command
-	os.system(command)
+	l = f
+	if '_' in f:
+		l = f[:f.find('_')]
+	if '.' in l:
+		l = l[l.rfind('.')+1:]
+	command = 'nice java -jar ' + pos_tagger_jar+ ' tag -input '+ input_folder+f +' -model '+model_path+l + ' -output ' + output_folder+f + ' -delim '+delim +' &> /tmp/pos_log_'+f +'.tmp &'
+	if len(commands)>=4:
+		command = 'nice java -jar ' + pos_tagger_jar+ ' tag -input '+ input_folder+f +' -model '+model_path+l + ' -output ' + output_folder+f + ' -delim '+delim 
+	commands.append(command)
 
-print 'done!'
+	if len(commands)>=5:
+		for c in commands:
+			print c
+			os.system(c)
+		commands = list()
+
+for c in commands:
+	os.system(c)

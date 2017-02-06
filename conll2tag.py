@@ -17,14 +17,14 @@ for sen in sens:
 	words=list()
 	for l in lines:
 		if l.strip():
-			if ' ' in l.strip().split()[1].strip():
-				print l.strip().split()[1].strip()
+			if ' ' in l.strip().split('\t')[1].strip():
+				print l.strip().split('\t')[1].strip()
 				print l
-				ws=l.strip().split()[1].strip().split(' ')
+				ws=l.strip().split('\t')[1].strip().split(' ')
 				for w in ws:
-					words.append(w+delim+(l.strip().split()[fp].replace('_','-')))
+					words.append(w+delim+(l.strip().split('\t')[fp].replace('_','-')))
 			else:
-				words.append(l.strip().split()[1].strip()+delim+(l.strip().split()[fp].replace('_','-')))
+				words.append(l.strip().split('\t')[1].strip()+delim+(l.strip().split('\t')[fp].replace('_','-')))
 	writer.write(' '.join(words)+'\n')
 
 writer.flush()
