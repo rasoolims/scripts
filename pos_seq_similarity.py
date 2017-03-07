@@ -24,6 +24,7 @@ def read_ngram_counts(file_path):
 	for trigram in trigram_count.keys():
 		bigram = trigram.split(' ')[0]+' '+ trigram.split(' ')[1]
 		ngram_prob[trigram] = float(trigram_count[trigram])/bigram_count[bigram]
+	'''
 	for fourgram in four_gram_count.keys():
 		trigram = fourgram.split(' ')[0]+' '+ fourgram.split(' ')[1]+' '+ fourgram.split(' ')[2]
 		ngram_prob[fourgram] = float(four_gram_count[fourgram])/trigram_count[trigram]
@@ -31,7 +32,7 @@ def read_ngram_counts(file_path):
 	for fivegram in five_gram_count.keys():
 		fourgram = fivegram.split(' ')[0]+' '+ fivegram.split(' ')[1]+' '+ fivegram.split(' ')[2]+' '+ fivegram.split(' ')[3]
 		ngram_prob[fivegram] = float(five_gram_count[fivegram])/four_gram_count[fourgram]
-
+	'''
 	return ngram_prob
 
 

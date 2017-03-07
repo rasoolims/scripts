@@ -26,7 +26,13 @@ for i in xrange(len(g_lab)):
 		fp[p_lab[i]]+=1
 		if verbose: print g_lines[i],g_lab[i],p_lab[i]
 
+
+mr = 0.0
 for lab in labels:
 	p,r = 100.0*tp[lab]/(tp[lab]+fp[lab]) if (tp[lab]+fp[lab])>0 else 0 , 100.0*tp[lab]/(tp[lab]+fn[lab]) if (tp[lab]+fn[lab])>0 else 0
 	f = 2*p*r /(p+r) if (p+r)>0 else 0
 	print lab,round(p,1),round(r,1),round(f,1)
+	mr+= r
+print float(mr)/len(labels)
+
+

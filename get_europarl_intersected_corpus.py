@@ -34,7 +34,7 @@ for lang in en2others_sentences.keys():
 	assert len(en_lines)==len(other_lines)
 
 	for i in xrange(len(en_lines)):
-		if len(en_lines[i].strip())>0:
+		if len(en_lines[i].strip())>0 and len(other_lines[i].strip()):
 			en2all_dict[en_lines[i].strip()][lang] = other_lines[i].strip()
 
 print len(en2all_dict)
