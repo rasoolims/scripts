@@ -13,7 +13,7 @@ while line1:
 	else:
 		spl=line1.strip().split('\t')
 		if len(spl)>2:
-			if not '-' in spl[0]:
+			if not '.' in spl[0] and spl[0].isdigit():
 				spl[5] = langId
 				if ':' in spl[7]:
 					spl[7] = spl[7][:spl[7].rfind(':')]
