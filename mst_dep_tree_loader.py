@@ -44,10 +44,12 @@ class DependencyTree:
 
 	@staticmethod
 	def is_nonprojective_arc(d1,h1,d2,h2):
-		if (d1<d2 and (h1>d2 and h1<h2 and h2<d1) or (h1<d2 and h1>h2 and h2>d1)):
-			return True
-		if (d2<d1 and (h2>d1 and h2<h1 and h1<d2) or (h2<d1 and h2>h1 and h1>d2)):
-			return True
+		if d1 > h1 and h1 != h2:
+			if (d1 > h2 and d1 < d2 and h1 < h2) or (d1 < h2 and d1 > d2 and h1 < d2):
+				return True
+		if d1 < h1 and h1 != h2:
+			if (h1 > h2 and h1 < d2 and d1 < h2) or (h1 < h2 and h1 > d2 and d1 < d2):
+				return True
 		return False
 
 	@staticmethod
@@ -57,11 +59,12 @@ class DependencyTree:
 			if i in non_projectives:
 				continue
 			dep1,head1 = i+1,heads[i]
-			for j in range(i+1,len(heads)):
+			for j in xrange(len(heads)):
+				if i==j: continue
 				dep2,head2 = j+1, heads[j]
 				if DependencyTree.is_nonprojective_arc(dep1, head1, dep2, head2):
-					non_projectives.add(i)
-					non_projectives.add(j)
+					non_projectives.add(i+1)
+					non_projectives.add(j+1)
 		return non_projectives
 
 	@staticmethod
