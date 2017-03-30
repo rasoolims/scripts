@@ -45,36 +45,36 @@ def belongs_to(tree, h, dep):
 	belongs = True
 	if h>dep:
 		for i in range(dep+1, h):
-			print h,dep,i,tree.labels[i-1]
+			#print h,dep,i,tree.labels[i-1]
 			if i in tree.reverse_tree[h]:
 				if (tree.labels[i-1] in separating_deps):
 					belongs = False
-					print '#1',(tree.labels[i-1] in separating_deps)
+					#print '#1',(tree.labels[i-1] in separating_deps)
 					break
 			elif not (tree.heads[i-1]>=dep and tree.heads[i-1]<h):
 				belongs = False
-				print '#2'
+				#print '#2'
 				break
 			elif tree.labels[i-1] in separating_deps:
 				belongs = False
-				print '#3'
+				#print '#3'
 				break
 	else:
 		for i in range(h+1, dep):
 			if i in tree.reverse_tree[h]:
 				if (tree.labels[i-1] in separating_deps):
 					belongs = False
-					print '#1'
+					#print '#1'
 					break
 			elif not (tree.heads[i-1]<=dep and tree.heads[i-1]>h):
 				belongs = False
-				print '#2'
+				#print '#2'
 				break
 			elif tree.labels[i-1] in separating_deps:
 				belongs = False
-				print '#3'
+				#print '#3'
 				break
-	print 'belongs',h,dep,belongs
+	#print 'belongs',h,dep,belongs
 	return belongs
 
 def assign_separations(tree, head, separation_sets, nonprojective_arcs):
@@ -147,7 +147,7 @@ def postprocess(tree, head, separation_sets):
 	joined = sorted(deps - separation_sets[head])
 
 	while len(joined)>0:
-		print 'joined',head,joined
+		#print 'joined',head,joined
 	 	if joined[0]<head and (tree.labels[joined[0]-1]=='punct' or tree.labels[joined[0]-1]=='cc'):
 	 		separation_sets[head].add(joined[0])
 	 		del joined[0]
@@ -184,12 +184,12 @@ def obtain_non_recursive(tree, i, phrases, separation_sets):
 		obtain_non_recursive(tree, d, phrases, separation_sets)
 
 
-def create_shallow_tree(tree, put_to_tag):
+def create_shallow_tree(tree, put_to_tag,use_ftag):
 	phrases = []
 	separation_sets = defaultdict(set)
 	nonprojective_arcs = DependencyTree.get_nonprojective_arcs(tree.heads)
 	assign_separations(tree, 0, separation_sets, nonprojective_arcs)
-	print 'nonprojective_arcs',nonprojective_arcs
+	#print 'nonprojective_arcs',nonprojective_arcs
 	postprocess(tree, 0, separation_sets)
 	
 	obtain_non_recursive(tree, 0, phrases, separation_sets)
@@ -212,9 +212,14 @@ def create_shallow_tree(tree, put_to_tag):
 			phrase[2] = 'AJ'
 
 		pl = phrase[2]+'P' if phrase[2]!='O' else 'O'
+		if use_ftag:
+			tree.tags[phrase[0]-1] = tree.ftags[phrase[0]-1]
 		tree.ftags[phrase[0]-1] = 'B-'+pl if pl!='O' else 'O'
+
 		if phrase[1]>phrase[0]:
 			for i in range(phrase[0]+1,phrase[1]+1):
+				if use_ftag:
+					tree.tags[i-1] = tree.ftags[i-1]
 				tree.ftags[i-1] = 'I-'+pl if  pl!='O' else 'O'
 
 	if not put_to_tag:
@@ -227,14 +232,12 @@ t = DependencyTree.load_trees_from_conll_file(os.path.abspath(sys.argv[1]))
 writer = codecs.open(os.path.abspath(sys.argv[2]),'w')
 
 put_to_tag = False if len(sys.argv)<4 or sys.argv[3]!='tag' else True
+use_ftag = False if len(sys.argv)<5 or sys.argv[4]!='f' else True
 
 print 'writing trees'
 full = 0
 for tree in t:
-	for i in xrange(len(tree.ftags)):
-		tree.ftags[i] = '_'
-	print ' '.join(tree.words)
-	writer.write(create_shallow_tree(tree, put_to_tag))
+	writer.write(create_shallow_tree(tree, put_to_tag, use_ftag))
 	is_full = True
 	for i in xrange(len(tree.ftags)):
 		if tree.ftags[i] == '_':

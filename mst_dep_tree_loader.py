@@ -285,7 +285,7 @@ class DependencyTree:
 		lst = list()
 
 		for i in xrange(len(self.words)):
-			ln = self.words[i]+' '+self.tags[i]+' '+self.ftags[i]
+			ln = self.words[i].replace(' ','_')+' '+self.tags[i]+' '+self.ftags[i]
 			lst.append(ln)
 		return '\n'.join(lst)
 

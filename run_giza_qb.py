@@ -34,7 +34,7 @@ for t in target_alignments:
 	l1 = t[t.rfind('/')+1:t.rfind('_')]
 	l2 = t[t.rfind('_')+1:]
 	if l1+'.'+l2 in os.listdir(input_folder):
-		alignment_command_targets.append((t,input_folder+l1+'.'+l2,input_folder+l2+'.'+l1,l1,l2))
+		alignment_command_targets.append((t,input_folder+l1+'.'+l2,input_folder+l2+'.'+l1,l2,l1))
 	else:
 		print l1+'.'+l2, 'not found!'
 

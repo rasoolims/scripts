@@ -8,7 +8,7 @@ for sen in sens:
 	words=list()
 	for l in lines:
 		if l.strip():
-			words.append(l.strip().split('\t')[1].strip())
+			words.append(l.strip().split('\t')[1].strip().replace(' ','_'))
 	writer.write(' '.join(words)+'\n')
 
 writer.flush()

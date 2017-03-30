@@ -17,6 +17,8 @@ while line1:
 				spl[5] = langId
 				if ':' in spl[7]:
 					spl[7] = spl[7][:spl[7].rfind(':')]
+				if spl[6]=='_' or spl[6]=='-':
+					spl[6]= '-1'
 				writer1.write('\t'.join(spl)+'\n')
 	
 
