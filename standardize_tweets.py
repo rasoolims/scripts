@@ -17,7 +17,8 @@ for line in codecs.open(os.path.abspath(sys.argv[1]),'r'):
 		c+=1
 		if c%10000==0: sys.stdout.write(str(c)+'...')
 	except:
-		print 'skipped',line
+		pass
+		#print 'skipped',line
 
 writer.close()
 print 'done!'

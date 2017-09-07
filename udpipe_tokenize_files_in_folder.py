@@ -21,7 +21,7 @@ for f in sorted(os.listdir(input_folder)):
 	l = f[f.rfind('.')+1:]
 	model_file = model_folder+l
 	if not l in to_skip:
-		command = ud_pipe_script +' '+model_file+' --tokenize  --output horizontal '+ input_folder+f +' > '+output_folder+f
+		command = ud_pipe_script +' '+model_file+' --tokenizer=presegmented  --output horizontal '+ input_folder+f +' > '+output_folder+f
 	else:
 		command = 'cp '+ input_folder+f+' '+output_folder+f
 	i+=1

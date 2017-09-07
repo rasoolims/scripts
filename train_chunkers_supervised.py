@@ -2,7 +2,7 @@ import os,sys
 from collections import defaultdict
 
 if len(sys.argv)<7:
-	print 'python_script  train_folder dev_folder model_folder num_iter num_thread'
+	print 'python_script train_folder dev_folder model_folder num_iter num_thread'
 	sys.exit(0)
 
 

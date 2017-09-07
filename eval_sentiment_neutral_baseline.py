@@ -2,7 +2,7 @@ import os,sys,codecs
 from collections import defaultdict
 
 g_lab = [line.split('\t')[1].strip() for line in codecs.open(os.path.abspath(sys.argv[1]),'r')]
-p_lab = [line.split('\t')[1].strip() for line in codecs.open(os.path.abspath(sys.argv[2]),'r')]
+p_lab = ['neutral' for line in codecs.open(os.path.abspath(sys.argv[1]),'r')]
 verbose = True if len(sys.argv)>3 and sys.argv[3]=='v' else False
 if verbose:
 	 g_lines = [line.split('\t')[0].strip() for line in codecs.open(os.path.abspath(sys.argv[1]),'r')]
