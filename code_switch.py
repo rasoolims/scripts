@@ -11,7 +11,7 @@ wiki_folder = os.path.abspath(sys.argv[2])+'/'
 output_path = os.path.abspath(sys.argv[3])
 ratio = 0.3
 
-dictionaries = defaultdict()
+dictionaries = dict()
 
 print 'reading dictionaries...'
 c = 0
@@ -40,6 +40,8 @@ for f in os.listdir(wiki_folder):
 	l = f
 	if '.gz' in l:
 		l = l[:-3]
+	if not l in dictionaries:
+		continue
 	print f
 	dct = dictionaries[l]
 	reader = gzip.open(wiki_folder+f,'r')

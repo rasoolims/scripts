@@ -10,7 +10,7 @@ line = reader.readline()
 while line:
 	spl = line.strip().split(' ')
 	if len(spl)==2:
-		clusters[spl[0]] = 'cluster_'+spl[1]
+		clusters[spl[1]] = 'cluster_'+spl[0]
 	line = reader.readline()
 
 
