@@ -43,6 +43,7 @@ for f in os.listdir(input_folder):
 		if len(spl)>6:
 			l_id = spl[5]
 			lp = l_id+'2'+f
+			spl[1] = spl[1].lower()
 			if dictionaries[lp].has_key(spl[1]):
 				if not use_in_word:
 					spl[2] = spl[1]
@@ -55,7 +56,7 @@ for f in os.listdir(input_folder):
 			else:
 				if not use_in_word:
 					spl[2] = spl[1]
-					spl[1] = '_'
+					spl[1] = spl[1]
 				else:
 					spl[2] = spl[1]
 

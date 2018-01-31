@@ -1,4 +1,6 @@
-import os,sys,codecs,operator
+import os,sys,codecs,operator,gzip
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 lines = codecs.open(os.path.abspath(sys.argv[1]),'r').read().strip().split('\n')
 
@@ -7,8 +9,8 @@ for l in lines:
 	for i in l.strip().split(' '):
 		words.add(i) 
 
-embed_reader =  codecs.open(os.path.abspath(sys.argv[2]),'r')
-embed_writer =  codecs.open(os.path.abspath(sys.argv[3]),'w')
+embed_reader =  gzip.open(os.path.abspath(sys.argv[2]),'r')
+embed_writer =  gzip.open(os.path.abspath(sys.argv[3]),'w')
 
 line = embed_reader.readline()
 c = 0

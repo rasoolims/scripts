@@ -56,7 +56,7 @@ while True:
 	if counter >= len(alignment_command_targets):
 		break
 
-print 'done!'
+print 'done with all', counter, '!'
 
 
 

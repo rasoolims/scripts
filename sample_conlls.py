@@ -13,7 +13,7 @@ t = DependencyTree.load_trees_from_conll_file(os.path.abspath(sys.argv[1]))
 
 print 'writing trees'
 writer = codecs.open(os.path.abspath(sys.argv[2]),'w')
-max_num = int(sys.argv[3])
+max_num = min(int(sys.argv[3]), len(t))
 
 c = 0
 seen = set()
@@ -21,7 +21,7 @@ v = 0
 while True:
 	i = random.randint(0,len(t)-1)
 	v += 1
-	if (not i in seen) and DependencyTree.is_projective(t[i].heads) and len(t[i].tags)>1:
+	if (not i in seen) and len(t[i].tags)>1: # and DependencyTree.is_projective(t[i].heads)
 		seen.add(i)
 		writer.write(t[i].conll_str()+'\n\n')
 		c+= 1

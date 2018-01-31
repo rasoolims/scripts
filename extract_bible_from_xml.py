@@ -24,7 +24,10 @@ for f in os.listdir(inp_folder):
 		for sentence in sentences:
 			sen_id = sentence.attributes['id'].value
 			try:
-				bible_dict[f][sen_id] = sentence.firstChild.nodeValue.replace('\n',' ').replace('\t',' ').strip()
+				s =  sentence.firstChild.nodeValue.replace('\n',' ').replace('\t',' ').strip()
+				end_id = sen_id[sen_id.rfind('.')+1:]
+				if s != end_id:
+					bible_dict[f][sen_id] = s
 			except: pass
 		print len(bible_dict[f])
 	except:

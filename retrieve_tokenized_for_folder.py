@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 import os,sys,codecs
 from collections import defaultdict
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 if len(sys.argv)<3:
 	print 'input_folder  untok_uniq_folder  tok_uniq_folder output_folder'
@@ -30,10 +32,12 @@ for f in os.listdir(input_folder):
 	lines = codecs.open(input_folder+f,'r',encoding='utf-8').read().strip().split('\n')
 	for l in lines:
 		output = []
-		if dest=='zh':
-			writer.write(l.strip()+'\n')
+		if len(l.strip())>0:
+			#if dest=='zh':
+			#	writer.write(l.strip()+'\n')
+			#else:
+			writer.write(tok_dict[dest][l.strip()]+'\n')	
 		else:
-			writer.write(tok_dict[dest][l.strip()]+'\n')
-	writer.close()	
-
+			writer.write(l.strip()+'\n')
+	writer.close()
 print 'done!'
