@@ -8,14 +8,14 @@ parser_path = os.path.abspath(sys.argv[1])+'/'
 treebank_path = os.path.abspath(sys.argv[2])+'/'
 embedding_path = os.path.abspath(sys.argv[3])+'/'
 output_folder = os.path.abspath(sys.argv[4])+'/'
-languages = sys.argv[5].strip().split(',')
+t = int(sys.argv[5])
+languages = sys.argv[6].strip().split(',')
 
 for i, language in enumerate(languages):
 	print 'SCRIPT: training for language', language
 	if not os.path.isdir(output_folder+language): os.mkdir(output_folder+language)
 	command = 'python -u ' + parser_path+ '/src/parser.py  --outdir '+ output_folder+language+' --train '\
-	 + treebank_path+ '/train_conll_auto_cat/'+language +' --dev '+ treebank_path+'/dev_conll_auto_cat/' \
-	 + language + ' --extrn ' + embedding_path + language + '.gz  > '+ output_folder+language+'/nohups.out '
+	 + treebank_path+ language + ' --extrn ' + embedding_path +' --t '+str(t)+ ' > '+ output_folder+language+'/nohups.out '
 	print 'SCRIPT:',command
 	os.system(command)
 	print 'SCRIPT: done with language', language

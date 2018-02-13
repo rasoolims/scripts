@@ -35,9 +35,6 @@ def eval_conll(parsed,gold):
 
 	return uas,las
 
-print os.listdir(conll_folder)
-
-print 'lang\tdata\tuas\tlas'
 output = list()
 output.append('lang\tdata\tuas\tlas')
 

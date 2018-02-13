@@ -23,7 +23,7 @@ while line1:
 		#ignoring null
 		for i in range(1,len(flds)): 
 			spls=flds[i].split(' ')
-			for spl in spls:
+			for spl in spls[1:]:
 				if spl.isdigit():
 					a=int(spl)
 					als=str(i)+'-'+str(a)
@@ -47,7 +47,7 @@ while line2:
 		#ignoring null
 		for i in range(1,len(flds)): 
 			spls=flds[i].split(' ')
-			for spl in spls:
+			for spl in spls[1:]:
 				if spl.isdigit():
 					a=int(spl)
 					als=str(a)+'-'+str(i)
