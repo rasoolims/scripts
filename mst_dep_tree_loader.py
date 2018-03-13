@@ -24,6 +24,17 @@ class DependencyTree:
 		for i in range(0,len(heads)):
 			self.reverse_tree[heads[i]].add(i+1)
 
+	def __eq__(self, other):
+		if isinstance(other, DependencyTree):
+			return self.tree_str() == other.tree_str()
+		return False
+
+	def __ne__(self, other):
+		return self.__eq__(other)
+
+	def __hash__(self):
+		return hash(self.tree_str())
+
 	@staticmethod
 	def trav(rev_head,h,visited):
 		if rev_head.has_key(h):
@@ -163,6 +174,24 @@ class DependencyTree:
 		tree_list = list()
 		[tree_list.append(DependencyTree.load_tree_from_conll_string(tree_str)) for tree_str in codecs.open(file_str,'r').read().strip().split('\n\n')]
 		return tree_list
+
+	def reorder_with_order(self, new_order):
+		new_words, new_lemmas, new_tags, new_heads, new_labels = [], [], [], [], []
+		rev_order = {0:0, -1:-1}
+		for i, o in enumerate(new_order):
+			new_words.append(self.words[o-1])
+			new_lemmas.append(self.lemmas[o - 1])
+			new_tags.append(self.tags[o - 1])
+			new_labels.append(self.labels[o - 1])
+			rev_order[o] = i + 1
+
+		for o in new_order:
+			new_head = rev_order[self.heads[o-1]]
+			new_heads.append(new_head)
+
+		tree = DependencyTree(new_words, new_tags, new_heads, new_labels)
+		tree.lang_id = self.lang_id
+		return tree
 
 
 	def get_span_list(self, head, span_set):

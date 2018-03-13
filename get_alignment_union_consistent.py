@@ -36,7 +36,7 @@ while line1:
 		for i in range(1,len(flds)): 
 			spls=flds[i].split(' ')
 			j = 0
-			for spl in spls:
+			for spl in spls[1:]:
 				j +=1
 				if spl.isdigit() and j>1:
 					a=int(spl)
@@ -66,7 +66,7 @@ while line2:
 		for i in range(1,len(flds)): 
 			spls=flds[i].split(' ')
 			j = 0 
-			for spl in spls:
+			for spl in spls[1:]:
 				j +=1
 				if spl.isdigit() and j>1:
 					a=int(spl)
@@ -82,16 +82,24 @@ for i in src_alignments.keys():
 	set2=dst_alignments[i]
 
 	union_set = list()
+	seen_sets = set()
 	for j in range(0,len(set1)):
 		if set1[j]==set2[j] and set1[j]!='*':
+			seen_sets.add(j)
 			outp = str(set1[j])+'-'+str(j)
 			union_set.append(outp)
-		elif set1[j]=='*' and set2[j]!='*':
+
+	for j in range(0,len(set1)):
+		if j in seen_sets:
+			continue
+		if set1[j]=='*' and set2[j]!='*':
 			outp = str(set2[j])+'-'+str(j)
 			union_set.append(outp)
+			seen_sets.add(j)
 		elif set1[j]!='*' and set2[j]=='*':
 			outp = str(set1[j])+'-'+str(j)
 			union_set.append(outp)
+			seen_sets.add(j)
 
 	writer.write(' '.join(union_set)+'\n')
 	if i%10000==0:

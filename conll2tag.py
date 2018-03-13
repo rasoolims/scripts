@@ -18,7 +18,8 @@ for sen in sens:
 	for l in lines:
 		if l.strip():
 			words.append(l.strip().split('\t')[1].strip().replace(' ','_')+delim+(l.strip().split('\t')[fp].replace('_','-')))
-	writer.write(' '.join(words)+'\n')
+	if len(words)>0:
+		writer.write(' '.join(words)+'\n')
 
 writer.flush()
 writer.close()

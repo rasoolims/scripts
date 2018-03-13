@@ -2,6 +2,7 @@ import os,sys,codecs,random,operator,math
 from mst_dep_tree_loader import DependencyTree
 from collections import defaultdict
 
+
 def reorder(line, source_words):
 	a = defaultdict(list)
 	for spl in line.strip().split(' '):
@@ -55,19 +56,26 @@ def fix_missing_items(o, target_len):
 			absent.remove(j)
 	return new_order
 
-target_text = codecs.open(os.path.abspath(sys.argv[1]), 'r').read().strip().split('\n')
-source_text = codecs.open(os.path.abspath(sys.argv[2]), 'r').read().strip().split('\n')
+
+target_trees = DependencyTree.load_trees_from_conll_file(os.path.abspath(sys.argv[1]))
+source_trees = DependencyTree.load_trees_from_conll_file(os.path.abspath(sys.argv[2]))
 alignments = codecs.open(os.path.abspath(sys.argv[3]), 'r').read().strip().split('\n')
 writer = codecs.open(os.path.abspath(sys.argv[4]), 'w')
 word_writer = codecs.open(os.path.abspath(sys.argv[5]), 'w')
 log_writer = codecs.open(os.path.abspath(sys.argv[5])+'.log', 'w')
 print os.path.abspath(sys.argv[5])+'.log'
 
-assert len(target_text)==len(alignments)
-for i in range(len(target_text)):
-	target_words = target_text[i].strip().split()
+
+assert len(target_trees)==len(alignments)
+print len(target_trees), len(source_trees),len(alignments)
+
+less_non_proj, just_two_most_proj = 0, 0
+less_non_proj_better, just_two_most_proj_better = 0, 0
+
+for i in range(len(target_trees)):
+	target_words = target_trees[i].words
 	target_len = len(target_words)
-	new_order, swl = reorder(alignments[i], source_text[i].strip().split())
+	new_order, swl = reorder(alignments[i], source_trees[i].words)
 	if target_len != len(new_order) -1:
 		new_order = fix_missing_items(new_order, target_len)
 	source_words = []
@@ -78,12 +86,33 @@ for i in range(len(target_text)):
 			source_words.append('<unk>')
 
 	assert target_len == len(new_order) -1
-	writer.write(' '.join([str(o) for o in new_order[1:]]) + '\n')
-	log_writer.write('>>>>\n')
-	log_writer.write(alignments[i].strip()+'\n')
-	log_writer.write(source_text[i].strip()+'\n')
-	log_writer.write(target_text[i].strip() + '\n')
-	log_writer.write(' '.join([target_words[o-1] for o in new_order[1:]]) + '\n')
-	word_writer.write(' '.join(source_words) + '\n')
+	new_tree = target_trees[i].reorder_with_order(new_order[1:])
+	
+	# log_writer.write('>>>>\n')
+	# log_writer.write(alignments[i].strip()+'\n')
+	# log_writer.write(' '.join(source_trees[i].words)+'\n')
+	# log_writer.write(' '.join(target_trees[i].words) + '\n')
+	# log_writer.write(' '.join([target_words[o-1] for o in new_order[1:]]) + '\n')
+	orig_non_proj = len(DependencyTree.get_nonprojective_arcs(target_trees[i].heads))
+	new_non_proj = len(DependencyTree.get_nonprojective_arcs(new_tree.heads))
+
+	if new_non_proj <= orig_non_proj:
+		less_non_proj += 1
+
+
+	if new_non_proj <= orig_non_proj + 1:
+		just_two_most_proj += 1
+		writer.write(' '.join([str(o) for o in new_order[1:]]) + '\n')
+		target_tags = target_trees[i].tags
+		word_writer.write(' '.join([target_words[ti]+'_'+target_tags[ti] for ti in range(len(target_words))]) + '\n')
+		log_writer.write(str(orig_non_proj) + '->'+ str(new_non_proj)+ '\n')
+		log_writer.write(target_trees[i].conll_str() + '\n\n')
+		log_writer.write(new_tree.conll_str() + '\n\n')
+		log_writer.write('>>>>>>>>>>>>\n')
+
+
+
 log_writer.close()
 writer.close()
+print len(target_trees)
+print less_non_proj, just_two_most_proj
