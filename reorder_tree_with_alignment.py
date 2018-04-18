@@ -192,18 +192,18 @@ for i in range(len(target_trees)):
 		just_two_most_proj += 1
 		if score>=orig_score:
 			just_two_most_proj_better += 1
-
+			target_trees[i].lang_id = source_lang
+			target_trees[i].lemmas = target_trees[i].words
+			new_tree.lang_id = source_lang
 			writer.write(' '.join([str(o) for o in new_order[1:]]) + '\n')
 			target_tags = target_trees[i].tags
-			translated_words = [dictionaries[target_words[ti]] if target_words[ti] in dictionaries else target_words[ti] for ti in range(len(target_words))]
-			relation = [target_trees[i].labels[ti] + ('-left' if target_trees[i].heads[ti]>=ti else '-right') for ti in range(len(target_words))]
-			word_writer.write(' '.join([translated_words[ti]+'_'+target_tags[ti] for ti in range(len(target_words))]) + '\n')
-			complex_writer.write(' '.join([translated_words[ti]+'_'+target_tags[ti]+'_'+relation[ti]+'_'+source_lang for ti in range(len(target_words))]) + '\n')
-			orig_word_writer.write(' '.join([target_words[ti]+'_'+target_tags[ti] for ti in range(len(target_words))]) + '\n')
+			# translated_words = [dictionaries[target_words[ti]] if target_words[ti] in dictionaries else target_words[ti] for ti in range(len(target_words))]
+			# word_writer.write(' '.join([translated_words[ti]+'_'+target_tags[ti] for ti in range(len(target_words))]) + '\n')
+			complex_writer.write(target_trees[i].conll_str() + '\n\n')
+			# orig_word_writer.write(' '.join([target_words[ti]+'_'+target_tags[ti] for ti in range(len(target_words))]) + '\n')
 			#log_writer.write(str(orig_non_proj) + '->'+ str(new_non_proj)+ '\n')
 			
-			rev_relation = [new_tree.labels[ti] + ('-left' if new_tree.heads[ti]>=ti else '-right') for ti in range(len(target_words))]
-			complex_output_writer.write(' '.join([new_tree.words[ti]+'_'+new_tree.tags[ti]+'_'+rev_relation[ti] for ti in range(len(target_words))]) + '\n')
+			complex_output_writer.write(new_tree.conll_str() + '\n\n')
 			log_writer.write(str(orig_score) +'->'+ str(score)+ '\n')
 			log_writer.write(alignments[i]+'\n\n')
 			log_writer.write(target_trees[i].conll_str() + '\n\n')

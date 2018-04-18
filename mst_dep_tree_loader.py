@@ -3,9 +3,9 @@ from collections import defaultdict
 from extract_dependency_spans import SpanInfo
 
 class DependencyTree:
-	def __init__(self, words, tags, heads, labels):
+	def __init__(self, words, tags, heads, labels, lemmas=None):
 		self.words = words
-		self.lemmas = words
+		self.lemmas = words if not lemmas else lemmas
 		self.tags = tags
 		self.ftags = tags
 		self.heads = heads
@@ -189,7 +189,7 @@ class DependencyTree:
 			new_head = rev_order[self.heads[o-1]]
 			new_heads.append(new_head)
 
-		tree = DependencyTree(new_words, new_tags, new_heads, new_labels)
+		tree = DependencyTree(new_words, new_tags, new_heads, new_labels, new_lemmas)
 		tree.lang_id = self.lang_id
 		return tree
 

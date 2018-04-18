@@ -14,7 +14,7 @@ model_path = os.path.abspath(sys.argv[5])+'/'
 for f in langs:
 	if not os.path.isdir(model_path+f):
 		os.mkdir(model_path+f)
-	command = 'python -u ' + script_path + ' --train ' + train_path+f+'.tree --train_t ' + train_path +f+'.order --outdir ' + model_path + f + ' --batch 1000 --epoch 10 --min_freq 1 --dropout 0 --dev_percent 1 --extrn ' + embed_path + ' > ' + model_path+f+'/log.out ' 
+	command = 'python -u ' + script_path + ' --train ' + train_path+f+'.tree --train_t ' + train_path +f+'.order --outdir ' + model_path + f + ' --batch 1000 --epoch 10 --min_freq 1 --dynet-l2 1e-6 --dropout 0 --dev_percent 1 --extrn ' + embed_path + ' > ' + model_path+f+'/log.out ' 
 
 	print command
 	os.system(command)

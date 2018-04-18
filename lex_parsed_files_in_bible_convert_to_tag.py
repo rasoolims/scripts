@@ -6,12 +6,10 @@ if len(sys.argv)<3:
 	print 'dic_folder bible_folder'
 	sys.exit(0)
 
-conll2tag = os.path.dirname(os.path.abspath(sys.argv[0]))+'/conll2tag.py'
 lexer = os.path.dirname(os.path.abspath(sys.argv[0]))+'/lex_parser_sub_code.py'
 
 dic_folder = os.path.abspath(sys.argv[1])+'/'
 input_folder = os.path.abspath(sys.argv[2])+'/'
-use_in_word = True
 ratio = 0.3
 
 dictionaries = defaultdict()
