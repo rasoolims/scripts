@@ -17,5 +17,5 @@ with open(os.path.abspath(sys.argv[1]), "r") as mst_reader:
             sentence.append(line.strip().split("\t")) 
 
 
-print("MST trees loading done with {1} trees!".format(len(sentence_trees)))
+print("MST trees loading done with {0} trees!".format(len(sentence_trees)))
 
