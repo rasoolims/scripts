@@ -27,12 +27,15 @@ conllu_trees = open(os.path.abspath(sys.argv[2]), "r").read().strip().split("\n\
 print("Conllu trees loading done with {0} trees!".format(len(conllu_trees)))
 
 found = 0
-for tree in conllu_trees:
+for ti, tree in enumerate(conllu_trees):
     word_and_ids = list(map(lambda line: line.strip().split("\t")[:2], tree.strip().split("\n")))
     sen = " ".join(none_filter(map(lambda word_id: word_id[1] if word_id[0].isdigit() else None, word_and_ids)))
 
     if sen in sentence_trees:
         found +=1
+
+    if ti%10000==0:
+        print(ti, "found:", found, end="\r")
 
 print("{0} Conllu trees found in MST trees!".format(found))
 
