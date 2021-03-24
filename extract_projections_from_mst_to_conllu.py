@@ -21,5 +21,5 @@ print("MST trees loading done with {0} trees!".format(len(sentence_trees)))
 
 print("Loading Conllu trees!")
 
-conllu_trees = open(os.path.abspath(sys.argv[1]), "r").read().strip().split("\n\n")
+conllu_trees = open(os.path.abspath(sys.argv[2]), "r").read().strip().split("\n\n")
 print("MST trees loading done with {0} trees!".format(len(conllu_trees)))
