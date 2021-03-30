@@ -74,7 +74,7 @@ with open(en_other_fastalign, "r") as en_other_fastalign_reader:
 print(len(translations))
 
 with open(other_tokenized, "r") as other_tokenized_reader:
-	for fl in other_tokenized:
+	for fl in other_tokenized_reader:
 		fl = fl.strip()
 		if len(fl)>0:
 			translations_tok.append(fl)
