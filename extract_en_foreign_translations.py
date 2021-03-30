@@ -56,10 +56,9 @@ with open(output_file_source, "w") as source_writer, open(output_file_target, "w
 	for i, en_sen in enumerate(en_to_translate):
 		en_tok_sen = en_moses2raw[en_sen] if en_sen in en_moses2raw else en_sen
 		translation = translations_tok[i]
-		if en_tok_sen in en2foreign_tok:
-			source_writer.write(en2foreign_tok[en_tok_sen] + "\n")
-			target_writer.write(translation + "\n")
-			written += 1
+		source_writer.write(en_tok_sen + "\n")
+		target_writer.write(translation + "\n")
+		written += 1
 print("written", written, "parallel sentences!")
 
 
