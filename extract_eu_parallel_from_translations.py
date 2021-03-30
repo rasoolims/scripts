@@ -20,13 +20,20 @@ print(len(en_raw2tok))
 raw_foreign_sens = []
 tok_foreign_sens = []
 en_equiv_sens = []
+missed_tokenized = 0
 
 with open(foreign_path, "r") as foreign_reader, open(en_foreign_path, "r") as en_foreign_reader:
 	for fl, el in zip(foreign_reader, en_foreign_reader):
 		fl = fl.strip()
 		if len(fl)>0:
 			raw_foreign_sens.append(fl)
-			en_equiv_sens.append(el)
+			el = el.strip()
+			if el in en_raw2tok:
+				en_equiv_sens.append(en_raw2tok[el])
+			else:
+				en_equiv_sens.append(el)
+				missed_tokenized += 1
+
 
 print(len(raw_foreign_sens))
 
@@ -39,4 +46,5 @@ with open(foreign_tok_path, "r") as foreign_tok_reader:
 print(len(tok_foreign_sens))
 
 assert len(raw_foreign_sens) == len(tok_foreign_sens)
+print("missed tokenized", missed_tokenized)
 
