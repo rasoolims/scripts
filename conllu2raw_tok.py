@@ -12,4 +12,5 @@ with open(os.path.abspath(sys.argv[1]), "r") as reader, open(os.path.abspath(sys
 		spl = line.split("\t")
 		if spl[0].isdigit():
 			words.append(spl[1].strip())
-
+	if len(words)>0:
+		writer.write(" ".join(words)+"\n")
