@@ -32,6 +32,7 @@ with open(foreign_path, "r") as foreign_reader, open(en_foreign_path, "r") as en
 				en_equiv_sens.append(en_raw2tok[el])
 			else:
 				en_equiv_sens.append(el)
+				print(el)
 				missed_tokenized += 1
 
 
