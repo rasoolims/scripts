@@ -9,7 +9,7 @@ with open(os.path.abspath(sys.argv[1]), "r") as reader, open(os.path.abspath(sys
 			writer.write(" ".join(words)+"\n")
 			words = []
 
-		spl = line.split("\t")[0]
-		if spl.isdigit():
+		spl = line.split("\t")
+		if spl[0].isdigit():
 			words.append(spl[1].strip())
-			
+
