@@ -63,6 +63,8 @@ translations_tok = []
 with open(en_other_fastalign, "r") as en_other_fastalign_reader:
 	for efl in en_other_fastalign_reader:
 		spl = efl.strip().split(" ||| ")
+		if len(spl)<2:
+			continue
 		src, dst = spl[0].strip(), spl[1].strip()
 
 		if len(dst.strip())>0:
