@@ -3,17 +3,22 @@ import sys
 
 
 en_path = os.path.abspath(sys.argv[1])
-en_tok_path = os.path.abspath(sys.argv[2])
-foreign_path = os.path.abspath(sys.argv[3])
-en_foreign_path = os.path.abspath(sys.argv[4])
-foreign_tok_path = os.path.abspath(sys.argv[5])
+en_moses_path = os.path.abspath(sys.argv[2])
+en_tok_path = os.path.abspath(sys.argv[3])
+foreign_path = os.path.abspath(sys.argv[4])
+en_foreign_path = os.path.abspath(sys.argv[5])
+foreign_tok_path = os.path.abspath(sys.argv[6])
+
 
 en_raw2tok = {}
+en_raw2moses= {}
 
-with open(en_path, "r") as en_reader, open(en_tok_path, "r") as en_tok_reader:
-	for line, tok_line in zip(en_reader, en_tok_reader):
+with open(en_path, "r") as en_reader, open(en_tok_path, "r") as en_tok_reader, open(en_moses_path, "r") as en_moses_reader:
+	for line, tok_line, moses_line in zip(en_reader, en_tok_reader, en_moses_reader):
 		en_raw2tok[line.strip()] = tok_line.strip()
-print(len(en_raw2tok))
+		en_raw2moses[line.strip()] = moses_line.strip()
+
+print(len(en_raw2tok), len(en_raw2moses))
 
 
 
@@ -32,7 +37,6 @@ with open(foreign_path, "r") as foreign_reader, open(en_foreign_path, "r") as en
 				en_equiv_sens.append(en_raw2tok[el])
 			else:
 				en_equiv_sens.append(el)
-				print(el)
 				missed_tokenized += 1
 
 
