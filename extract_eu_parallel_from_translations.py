@@ -11,14 +11,14 @@ foreign_tok_path = os.path.abspath(sys.argv[6])
 
 
 en_raw2tok = {}
-en_raw2moses= {}
+en_moses2raw = {}
 
 with open(en_path, "r") as en_reader, open(en_tok_path, "r") as en_tok_reader, open(en_moses_path, "r") as en_moses_reader:
 	for line, tok_line, moses_line in zip(en_reader, en_tok_reader, en_moses_reader):
 		en_raw2tok[line.strip()] = tok_line.strip()
-		en_raw2moses[line.strip()] = moses_line.strip()
+		en_moses2raw[moses_line.strip()] = line.strip()
 
-print(len(en_raw2tok), len(en_raw2moses))
+print(len(en_raw2tok), len(en_moses2raw))
 
 
 
