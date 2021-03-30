@@ -8,7 +8,8 @@ en_tok_path = os.path.abspath(sys.argv[3])
 foreign_path = os.path.abspath(sys.argv[4])
 en_foreign_path = os.path.abspath(sys.argv[5])
 foreign_tok_path = os.path.abspath(sys.argv[6])
-
+en_other_fastalign =  os.path.abspath(sys.argv[7])
+other_tokenized =  os.path.abspath(sys.argv[8])
 
 en_raw2tok = {}
 en_moses2raw = {}
@@ -52,4 +53,30 @@ print(len(tok_foreign_sens))
 
 assert len(raw_foreign_sens) == len(tok_foreign_sens)
 print("missed tokenized", missed_tokenized)
+
+
+
+en_to_translate = []
+translations = []
+translations_tok = []
+
+with open(en_other_fastalign, "r") as en_other_fastalign_reader:
+	for efl in en_other_fastalign_reader:
+		spl = efl.strip().split(" ||| ")
+		src, dst = spl[0].strip(), spl[1].strip()
+
+		if len(dst.strip())>0:
+			en_to_translate.append(src)
+			translations.append(dst)
+
+print(len(translations))
+
+with open(other_tokenized, "r") as other_tokenized_reader:
+	for fl in other_tokenized:
+		fl = fl.strip()
+		if len(fl)>0:
+			translations_tok.append(fl)
+
+print(len(translations_tok))
+assert len(translations) == len(translations_tok)
 
