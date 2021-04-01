@@ -16,7 +16,7 @@ for sen in conllu_data:
 	for line in lines:
 		spl = line.strip().split("\t")
 		if spl[0].isdigit():
-			words.append(spl[1])
+			words.append(spl[1].replace("|", ""))
 
 	if len(words)>0:
 		raw2conllu[" ".join(words)] = sen
