@@ -1,6 +1,15 @@
 import os
 import sys
 
+def empty_tree(sen):
+	words = sen.strip().split(" ")
+
+	output = []
+	for i, w in enumerate(words):
+		o = [str(i+1), w, w] + ["_"]*8
+		output.append("\t".join(o))
+	return "\n".join(output)
+
 
 conllu_path = os.path.abspath(sys.argv[1])
 raw_path = os.path.abspath(sys.argv[2])
@@ -26,8 +35,10 @@ print(len(raw2conllu))
 with open(raw_path, "r") as reader, open(output_path, "w") as writer:
 	for line in reader:
 		sen = line.strip()
-		assert sen in raw2conllu, sen +" =>> " + conllu_path
-
-		writer.write(raw2conllu[sen]+"\n\n")
+		if sen not in raw2conllu:
+			writer.write(empty_tree(sen)+"\n\n")
+			print("EROOR:", sen +" =>> " + conllu_path)
+		else:
+			writer.write(raw2conllu[sen]+"\n\n")
 
 print("Done!")
