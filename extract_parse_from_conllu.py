@@ -26,7 +26,7 @@ print(len(raw2conllu))
 with open(raw_path, "r") as reader, open(output_path, "w") as writer:
 	for line in reader:
 		sen = line.strip()
-		assert sen in raw2conllu
+		assert sen in raw2conllu, sen
 
 		writer.write(raw2conllu[sen]+"\n\n")
 
