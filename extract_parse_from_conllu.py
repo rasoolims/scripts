@@ -36,8 +36,10 @@ with open(raw_path, "r") as reader, open(output_path, "w") as writer:
 	for line in reader:
 		sen = line.strip()
 		if sen not in raw2conllu:
-			writer.write(empty_tree(sen)+"\n\n")
+			empty_tree_str = empty_tree(sen)
+			writer.write(empty_tree_str+"\n\n")
 			print("EROOR:", sen +" =>> " + conllu_path)
+			print(empty_tree_str)
 		else:
 			writer.write(raw2conllu[sen]+"\n\n")
 
