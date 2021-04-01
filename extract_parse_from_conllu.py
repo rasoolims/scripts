@@ -22,3 +22,12 @@ for sen in conllu_data:
 		raw2conllu[" ".join(words)] = sen
 
 print(len(raw2conllu))
+
+with open(raw_path, "r") as reader, open(output_path, "w") as writer:
+	for line in reader:
+		sen = line.strip()
+		assert sen in raw2conllu
+
+		writer.write(raw2conllu[sen]+"\n\n")
+
+print("Done!")
