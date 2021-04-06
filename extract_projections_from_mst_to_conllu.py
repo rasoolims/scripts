@@ -46,7 +46,7 @@ with open(os.path.abspath(sys.argv[3]), "w") as writer:
                     dep_labl = labels[wid]
 
                     spl[6] = rel
-                    spl[7] = dep_labl
+                    spl[7] = dep_labl if int(rel)!=-1 else "_"
                 writer.write("\t".join(spl))
                 writer.write("\n")
             writer.write("\n")

@@ -66,7 +66,7 @@ for sentence in projected_trees.keys():
 
 
 		all_possib+=1
-		if max_vote>=min_vote:
+		if max_vote>=min_vote and max_h!="-1":
 			projected+=1
 			max_vote_heads.append(max_h)
 			max_vote_labs.append(max_l)
